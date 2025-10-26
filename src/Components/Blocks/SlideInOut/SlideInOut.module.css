@@ -1,0 +1,26 @@
+.container {
+    will-change: transform, opacity;
+    transform: var(--closed-tx);
+    opacity: 0;
+    transition:
+        transform var(--slide-duration) ease,
+        opacity var(--slide-duration) ease;
+    /* чтобы дочерний блок не "дёргался" во время въезда */
+    display: inline-block;
+}
+
+/* Стороны — можно донастроить при желании */
+.fromLeft {}
+
+.fromRight {}
+
+/* Открыто/закрыто */
+.open {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.closed {
+    transform: var(--closed-tx);
+    opacity: 0;
+}

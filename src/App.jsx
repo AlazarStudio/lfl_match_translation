@@ -17,7 +17,7 @@ function App() {
       </Routes>
 
       {/* Кнопка установки */}
-      <InstallButton />
+      {/* <InstallButton /> */}
     </>
   )
 }

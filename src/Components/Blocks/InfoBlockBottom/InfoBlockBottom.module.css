@@ -1,0 +1,84 @@
+.infoBlockBottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 740px;
+    height: 100px;
+    background: url("/back_new.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.infoBlockBottom_left {
+    display: flex;
+    align-items: center;
+}
+
+.infoBlockBottom_logoTeam {
+    width: 100px;
+    height: 100px;
+}
+
+.infoBlockBottom_logoTeam img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.infoBlockBottom_player {
+    display: flex;
+    align-items: center;
+    margin-left: 11px;
+}
+
+.infoBlockBottom_player_photo {
+    width: 100px;
+    height: 100px;
+}
+
+.infoBlockBottom_player_photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.infoBlockBottom_event {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    margin-right: 21px;
+}
+
+.infoBlockBottom_event_time {
+    font-size: 32px;
+    color: #fff;
+}
+
+.infoBlockBottom_player_info {
+    margin-left: 23px;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+.infoBlockBottom_player_info_name {
+    font-size: 32px;
+    color: #fff;
+}
+
+.infoBlockBottom_player_info_teamName {
+    font-size: 20px;
+    color: #fff;
+    background-color: #0000007c;
+    width: fit-content;
+    border-radius: 20px;
+    padding: 3px 9px;
+}
+
+.infoBlockBottom_event_img{
+
+}

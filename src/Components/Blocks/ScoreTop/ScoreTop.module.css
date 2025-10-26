@@ -1,0 +1,90 @@
+.scoreTop {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.scoreTop_logo {
+    width: 60px;
+    height: 60px;
+}
+
+.scoreTop_logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.scoreTop_info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.scoreTop_info_top {
+    display: flex;
+    align-items: center;
+    height: 60px;
+}
+
+.scoreTop_info_top_left,
+.scoreTop_info_top_right {
+    display: flex;
+    align-items: center;
+}
+
+.scoreTop_info_top_left_color {
+    width: 20px;
+    height: 60px;
+    background-color: #EC96F4;
+}
+
+.scoreTop_info_top_right_color {
+    width: 20px;
+    height: 60px;
+    background-color: #25B5DD;
+}
+
+.scoreTop_info_top_left_team,
+.scoreTop_info_top_right_team {
+    width: 160px;
+    height: 60px;
+    background-color: #2A0054;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 24px;
+}
+
+.scoreTop_info_top_center {
+    width: 120px;
+    height: 60px;
+    background-color: #E5097F;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.scoreTop_info_top_center_score {
+    color: #fff;
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.scoreTop_info_bottom {
+    width: 120px;
+    height: 30px;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.scoreTop_info_bottom_time {
+    color: #000;
+    font-size: 20px;
+}

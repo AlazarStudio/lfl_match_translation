@@ -15,7 +15,14 @@ a {
 }
 
 body {
-    background-color: #eef0f4;
+    /* background-color: #ffffff; */
+    background: url('/game.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh;
+    width: 100%;
+    background-position: 50% 50%;
+    overflow: hidden;
 }
 
 main {
