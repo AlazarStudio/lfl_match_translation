@@ -4,7 +4,7 @@ import classes from "./SlideInOut.module.css";
 function SlideInOut({
     children,
     top, left, right, bottom,
-    from = "left",
+    from = "left",                // 'left' | 'right' | 'top' | 'bottom'
 
     isOpen: controlledOpen,
     stick = false,
@@ -23,8 +23,6 @@ function SlideInOut({
 
     className,
     style,
-
-    // <- новое: хотим ли запускать авто-анимацию прямо на маунте
     runOnMount = false,
 }) {
     const isControlled = typeof controlledOpen === "boolean";
@@ -32,20 +30,17 @@ function SlideInOut({
     const open = isControlled ? controlledOpen : uncontrolledOpen;
 
     const timerRef = useRef();
-    const prevKeyRef = useRef(); // undefined на самом первом рендере
+    const prevKeyRef = useRef();
 
     useEffect(() => () => clearTimeout(timerRef.current), []);
 
     useEffect(() => {
         const isFirstRender = prevKeyRef.current === undefined;
         const keyChanged = prevKeyRef.current !== triggerKey;
-        // запомним текущее значение для следующего раза
         prevKeyRef.current = triggerKey;
 
-        // --- не делаем ничего на первом рендере, если явно не просили
         if (isFirstRender && !runOnMount) return;
 
-        // --- персистентный режим
         if (stick) {
             if (!isControlled) {
                 clearTimeout(timerRef.current);
@@ -54,7 +49,6 @@ function SlideInOut({
             return;
         }
 
-        // --- авто-режим: стартуем только если ключ ИЗМЕНИЛСЯ
         if (typeof showForMs === "number" && (runOnMount ? true : keyChanged)) {
             if (!isControlled) {
                 clearTimeout(timerRef.current);
@@ -74,30 +68,48 @@ function SlideInOut({
         durationMs, isControlled, runOnMount, onEntered, onExited
     ]);
 
-    const [sideStyle, closedTx] = useMemo(() => {
-        const side = from === "right" ? "right" : "left";
-        const posSide = side === "left" ? { left } : { right };
-        const tx = from === "right"
-            ? `translateX(calc(100% + ${extraOffsetPx}px))`
-            : `translateX(calc(-100% - ${extraOffsetPx}px))`;
-        return [{
-            position: "fixed",
-            top, bottom,
-            ...(posSide[side] !== undefined ? posSide : { [side]: 16 }),
-            zIndex
-        }, tx];
-    }, [from, top, bottom, left, right, extraOffsetPx, zIndex]);
+    const isHorizontal = from === "left" || from === "right";
+    const isVertical = from === "top" || from === "bottom";
+
+    const [posStyle, closedTx] = useMemo(() => {
+        // трансформация закрытого состояния
+        let tx = "translateX(0)";
+        if (from === "left") tx = `translateX(calc(-100% - ${extraOffsetPx}px))`;
+        if (from === "right") tx = `translateX(calc(100% + ${extraOffsetPx}px))`;
+        if (from === "top") tx = `translateY(calc(-100% - ${extraOffsetPx}px))`;
+        if (from === "bottom") tx = `translateY(calc(100% + ${extraOffsetPx}px))`;
+
+        // позиционирование
+        const styleObj = { position: "fixed", zIndex };
+
+        if (isHorizontal) {
+            // горизонтальный выезд — обязательно фиксируем по вертикали
+            styleObj.top = top ?? 16;
+            if (bottom !== undefined) styleObj.bottom = bottom;
+            // и ставим сторону
+            if (from === "left") styleObj.left = left ?? 16;
+            if (from === "right") styleObj.right = right ?? 16;
+        } else {
+            // вертикальный выезд — фиксируем по горизонтали
+            styleObj.left = left ?? 16;
+            if (right !== undefined) styleObj.right = right;
+            // и ставим сторону
+            if (from === "top") styleObj.top = top ?? 16;
+            if (from === "bottom") styleObj.bottom = bottom ?? 16;
+        }
+
+        return [styleObj, tx];
+    }, [from, top, bottom, left, right, extraOffsetPx, isHorizontal]);
 
     return (
         <div
             className={[
                 classes.container,
                 open ? classes.open : classes.closed,
-                from === "right" ? classes.fromRight : classes.fromLeft,
                 className
             ].filter(Boolean).join(" ")}
             style={{
-                ...sideStyle,
+                ...posStyle,
                 "--slide-duration": `${durationMs}ms`,
                 "--closed-tx": closedTx,
                 ...style

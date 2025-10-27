@@ -3,12 +3,16 @@ import ScoreTop from "../Blocks/ScoreTop/ScoreTop";
 import SponsorsTop from "../Blocks/SponsorsTop/SponsorsTop";
 import SlideInOut from "../Blocks/SlideInOut/SlideInOut";
 import InfoBlockBottom from "../Blocks/InfoBlockBottom/InfoBlockBottom";
+import Waiting from "../Blocks/Waiting/Waiting";
+import MainLogo from "../Blocks/MainLogo/MainLogo";
 
 function Main_Page({ children, ...props }) {
     const [event, setEvent] = useState("yellow");
     const [openScore, setOpenScore] = useState(false);
-    const [openSponsorTop, setOpenSponsorTop] = useState(false);
+    const [openWating, setOpenWating] = useState(false);
+    const [openBreak, setOpenBreak] = useState(false);
     const [showEvent, setshowEvent] = useState(0);
+    const [isChange, setIsChange] = useState(false);
 
     let player = {
         name: "А. Агержаноков",
@@ -41,7 +45,7 @@ function Main_Page({ children, ...props }) {
 
             <SlideInOut
                 from="left"
-                bottom={64}
+                bottom={86}
                 left={86}
                 showForMs={5000}
                 durationMs={500}
@@ -55,12 +59,93 @@ function Main_Page({ children, ...props }) {
                 />
             </SlideInOut>
 
+            <SlideInOut
+                isOpen={openWating}
+                from="top"
+                top={64}
+                left={"50%"}
+                durationMs={500}
+            >
+                <MainLogo />
+            </SlideInOut>
 
 
-            <button onClick={() => setOpenScore(o => !o)}>
+            <SlideInOut
+                isOpen={openWating}
+                from="bottom"
+                bottom={64}
+                left={"50%"}
+                durationMs={500}
+            >
+                <Waiting />
+            </SlideInOut>
+
+            <SlideInOut
+                isOpen={openBreak}
+                from="top"
+                top={64}
+                left={"50%"}
+                durationMs={500}
+            >
+                <MainLogo />
+            </SlideInOut>
+
+
+            <SlideInOut
+                isOpen={openBreak}
+                from="bottom"
+                bottom={64}
+                left={"50%"}
+                durationMs={500}
+            >
+                <Waiting breakMatch={true} />
+            </SlideInOut>
+
+            <button onClick={() => {
+                setOpenWating(false)
+                setOpenBreak(false)
+
+                setTimeout(() => {
+                    setOpenScore(o => !o)
+                }, 500)
+            }}>
                 {openScore ? 'Скрыть' : "Показать"} счет и спонсоров
             </button>
-            <button onClick={() => setshowEvent(k => k + 1)}>Событие</button>
+
+            <button onClick={() => {
+                setOpenScore(true)
+                setOpenWating(false)
+                setOpenBreak(false)
+
+                setTimeout(() => {
+                    setshowEvent(k => k + 1)
+                }, 500)
+            }}>
+                Событие
+            </button>
+
+            <button onClick={() => {
+                setOpenScore(false)
+                setOpenBreak(false)
+
+                setTimeout(() => {
+                    setOpenWating(o => !o);
+                }, 500)
+
+            }}>
+                Ожидание
+            </button>
+
+            <button onClick={() => {
+                setOpenWating(false);
+                setOpenScore(false)
+
+                setTimeout(() => {
+                    setOpenBreak(o => !o);
+                }, 500)
+            }}>
+                Перерыв
+            </button>
 
         </>
     );
