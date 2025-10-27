@@ -41,7 +41,7 @@ function Main_Page({ children, ...props }) {
 
             <SlideInOut
                 from="left"
-                bottom={113}
+                bottom={64}
                 left={86}
                 showForMs={5000}
                 durationMs={500}
