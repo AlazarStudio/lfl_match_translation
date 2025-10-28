@@ -16,7 +16,7 @@ a {
 
 body {
     /* background-color: transparent; */
-    /* background: url('/game.png'); */
+    background: url('/game.png');
     background-repeat: no-repeat;
     background-size: cover;
     height: 100vh;

@@ -1,11 +1,27 @@
 import { create } from "zustand";
-import { connectLive, joinRoom, onLive, emit } from "../services/liveSocket";
+import { connectLive, joinRoom, onLive, emit, onOverlay, overlayGet } from "../services/liveSocket";
 
 const API_BASE = "https://backend.mlf09.ru";
 const API_TM = `${API_BASE}/api/tournament-matches`;
 
 export const useMatchEvents = create((set, get) => ({
   matchId: null,
+  // дефолт — чтобы страница не была пустой до прихода состояния
+  overlay: { OpenScore: true, OpenWaiting: false, OpenBreak: false, ShowPlug: false, ShowSostav: false },
+  // удобные методы для страницы/пульта
+  setOverlayKey(key, value) {
+    const matchId = get().matchId;
+    if (!matchId) return;
+    // локально оптимистично обновим
+    set({ overlay: { ...(get().overlay || {}), [key]: value } });
+    // отправим на бэк
+    import("../services/liveSocket").then(({ overlaySet }) => overlaySet(matchId, { [key]: value }));
+  },
+  toggleOverlayKey(key) {
+    const matchId = get().matchId;
+    if (!matchId) return;
+    import("../services/liveSocket").then(({ overlayToggle }) => overlayToggle(matchId, key));
+  },
 
   // данные команд
   team1: null, // { title, logo }
@@ -75,6 +91,11 @@ export const useMatchEvents = create((set, get) => ({
 
     // --- Подписки ---
 
+    const offOverlay = onOverlay((state) => {
+      set({ overlay: state || {} })
+    });
+
+    overlayGet(matchId);
     // Счёт
     const offScore = onLive("tmatch:score", (p) => {
       set({
@@ -159,7 +180,7 @@ export const useMatchEvents = create((set, get) => ({
 
     // cleanup
     return () => {
-      offScore(); offUpdate(); offClock(); offEvCreated(); offEvUpdated(); offEvDeleted();
+      offScore(); offUpdate(); offClock(); offEvCreated(); offEvUpdated(); offEvDeleted(); offOverlay && offOverlay();
       const id = get()._clockTimerId;
       if (id) { clearInterval(id); set({ _clockTimerId: null }); }
     };

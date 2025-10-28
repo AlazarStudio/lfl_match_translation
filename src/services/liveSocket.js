@@ -42,3 +42,21 @@ export function emit(event, payload) {
 export function requestClock(matchId) {
     emit("tmatch:clock:get", { matchId }); // именно так в примере бэка :contentReference[oaicite:0]{index=0}
 }
+
+
+// === НОВОЕ: управление overlay ===
+export function overlayGet(matchId) {
+    emit("tmatch:overlay:get", { matchId });
+}
+export function overlaySet(matchId, patch) {
+    // пример бэка: socket.emit('tmatch:overlay:set', { matchId, OpenScore: true })
+    emit("tmatch:overlay:set", { matchId, ...patch });
+}
+export function overlayToggle(matchId, key) {
+    // пример бэка: socket.emit('tmatch:overlay:toggle', { matchId, key: 'ShowPlug' })
+    emit("tmatch:overlay:toggle", { matchId, key });
+}
+export function onOverlay(cb) {
+    // пример бэка: socket.on('tmatch:overlay', (state) => ...)
+    return onLive("tmatch:overlay", cb);
+}

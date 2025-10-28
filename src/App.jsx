@@ -7,6 +7,7 @@ import Layout from "./Components/Standart/Layout/Layout";
 import InstallButton from "./Components/Pages/InstallButton/InstallButton";
 import DevLiveProbe from "./DevLiveProbe";
 import DevClockProbe from "./DevClockProbe";
+import OverlayPanel from "./Components/Pages/OverlayPanel";
 
 function App() {
   return (
@@ -14,6 +15,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Main_Page />} />
+          <Route path="/overlay" element={<OverlayPanel />} />
+
           <Route path="/probe" element={<DevLiveProbe matchId={5} />} />
           <Route path="/clock" element={<DevClockProbe />} />
           <Route path="*" element={<Non_Found_Page />} />

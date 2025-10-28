@@ -28,6 +28,10 @@ function Main_Page() {
     const team1 = useMatchEvents((s) => s.team1);
     const team2 = useMatchEvents((s) => s.team2);
 
+    const overlay = useMatchEvents((s) => s.overlay);
+    const setOverlayKey = useMatchEvents((s) => s.setOverlayKey);
+    const toggleOverlayKey = useMatchEvents((s) => s.toggleOverlayKey);
+
     // локальные состояния для управления другими блоками (ожидание, состав и т.д.)
     const [openScore, setOpenScore] = React.useState(true);
     const [openWaiting, setOpenWaiting] = React.useState(false);
@@ -39,10 +43,12 @@ function Main_Page() {
         initEvents(MATCH_ID); // подключаемся к матчу
     }, [initEvents]);
 
+    const isScoreOpen = overlay?.OpenScore ?? true;
+
     return (
         <>
             {/* ======= ВЕРХНИЙ СЧЁТ ======= */}
-            <SlideInOut isOpen={openScore} from="left" top={64} left={86} durationMs={500}>
+            <SlideInOut isOpen={isScoreOpen} from="left" top={64} left={86} durationMs={500}>
                 <ScoreTop
                     team1Score={score1}
                     team2Score={score2}
@@ -52,7 +58,7 @@ function Main_Page() {
             </SlideInOut>
 
             {/* ======= СПОНСОРЫ СПРАВА ======= */}
-            <SlideInOut isOpen={openScore} from="right" top={47} right={86} durationMs={500}>
+            <SlideInOut isOpen={isScoreOpen} from="right" top={47} right={86} durationMs={500}>
                 <SponsorsTop />
             </SlideInOut>
 
@@ -83,10 +89,10 @@ function Main_Page() {
             </SlideInOut>
 
             {/* ======= ЭКРАН ОЖИДАНИЯ ======= */}
-            <SlideInOut isOpen={openWaiting} from="top" top={64} left="50%" durationMs={500}>
+            <SlideInOut isOpen={overlay?.OpenWaiting ?? false} from="top" top={64} left="50%" durationMs={500}>
                 <MainLogo />
             </SlideInOut>
-            <SlideInOut isOpen={openWaiting} from="bottom" bottom={64} left="50%" durationMs={500}>
+            <SlideInOut isOpen={overlay?.OpenWaiting ?? false} from="bottom" bottom={64} left="50%" durationMs={500}>
                 <Waiting
                     team1={team1}
                     team2={team2}
@@ -94,10 +100,10 @@ function Main_Page() {
             </SlideInOut>
 
             {/* ======= ЭКРАН ПЕРЕРЫВА ======= */}
-            <SlideInOut isOpen={openBreak} from="top" top={64} left="50%" durationMs={500}>
+            <SlideInOut isOpen={overlay?.OpenBreak ?? false} from="top" top={64} left="50%" durationMs={500}>
                 <MainLogo />
             </SlideInOut>
-            <SlideInOut isOpen={openBreak} from="bottom" bottom={64} left="50%" durationMs={500}>
+            <SlideInOut isOpen={overlay?.OpenBreak ?? false} from="bottom" bottom={64} left="50%" durationMs={500}>
                 <Waiting
                     breakMatch={true}
                     team1={team1}
@@ -108,13 +114,13 @@ function Main_Page() {
             </SlideInOut>
 
             {/* ======= СОСТАВ КОМАНД ======= */}
-            <SlideInOut isOpen={showSostav} from="bottom" bottom="50%" left="50%" durationMs={500}>
+            <SlideInOut isOpen={overlay?.ShowSostav ?? false} from="bottom" bottom="50%" left="50%" durationMs={500}>
                 <StructureTeam />
             </SlideInOut>
 
             {/* ======= ЗАГЛУШКА ======= */}
             <SlideInOut
-                isOpen={showPlug}
+                isOpen={overlay?.ShowPlug ?? false}
                 from="top"
                 top={0}
                 left={0}
@@ -129,7 +135,7 @@ function Main_Page() {
             </SlideInOut>
 
             {/* ======= КНОПКИ УПРАВЛЕНИЯ ======= */}
-            <div style={{ position: "fixed", top: 20, left: 20, zIndex: 2000, display: "flex", flexDirection: "column", gap: 8 }}>
+            {/* <div style={{ position: "fixed", top: 20, left: 20, zIndex: 2000, display: "flex", flexDirection: "column", gap: 8 }}>
                 <button onClick={() => setOpenScore((o) => !o)}>
                     {openScore ? "Скрыть" : "Показать"} счёт
                 </button>
@@ -137,7 +143,22 @@ function Main_Page() {
                 <button onClick={() => setOpenBreak((o) => !o)}>Перерыв</button>
                 <button onClick={() => setShowSostav((o) => !o)}>Состав</button>
                 <button onClick={() => setShowPlug((o) => !o)}>Заглушка</button>
-            </div>
+            </div> */}
+
+            {/* Временные кнопки — удобно проверить, что всё ездит */}
+            {/* <div style={{ position: "fixed", right: 12, bottom: 12, zIndex: 3000, display: "grid", gap: 6 }}>
+                <button onClick={() => setOverlayKey("OpenScore", !(overlay?.OpenScore))}>
+                    {overlay?.OpenScore ? "Скрыть" : "Показать"} счёт
+                </button>
+                <button onClick={() => setOverlayKey("OpenWaiting", !(overlay?.OpenWaiting))}>
+                    Toggle Ожидание
+                </button>
+                <button onClick={() => setOverlayKey("OpenBreak", !(overlay?.OpenBreak))}>
+                    Toggle Перерыв
+                </button>
+                <button onClick={() => toggleOverlayKey("ShowPlug")}>Toggle Заглушка</button>
+                <button onClick={() => toggleOverlayKey("ShowSostav")}>Toggle Состав</button>
+            </div> */}
         </>
     );
 }
