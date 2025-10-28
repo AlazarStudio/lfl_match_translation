@@ -1,7 +1,7 @@
 import React from "react";
 import classes from './ScoreTop.module.css';
 
-function ScoreTop({ children, ...props }) {
+function ScoreTop({ children, team1Score, team2Score, team1, team2, ...props }) {
     return (
         <div className={classes.scoreTop}>
             <div className={classes.scoreTop_logo}>
@@ -12,15 +12,15 @@ function ScoreTop({ children, ...props }) {
                 <div className={classes.scoreTop_info_top}>
                     <div className={classes.scoreTop_info_top_left}>
                         <div className={classes.scoreTop_info_top_left_color}></div>
-                        <div className={classes.scoreTop_info_top_left_team}>ДРЖ</div>
+                        <div className={classes.scoreTop_info_top_left_team}>{team1.title}</div>
                     </div>
 
                     <div className={classes.scoreTop_info_top_center}>
-                        <div className={classes.scoreTop_info_top_center_score}>0-2</div>
+                        <div className={classes.scoreTop_info_top_center_score}>{team1Score} - {team2Score}</div>
                     </div>
 
                     <div className={classes.scoreTop_info_top_right}>
-                        <div className={classes.scoreTop_info_top_right_team}>МЕК</div>
+                        <div className={classes.scoreTop_info_top_right_team}>{team2.title}</div>
                         <div className={classes.scoreTop_info_top_right_color}></div>
                     </div>
                 </div>

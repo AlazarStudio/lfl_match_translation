@@ -19,12 +19,14 @@ const MATCH_ID = 7;
 function Main_Page() {
     // инициализация сокета и слушателей
     const initEvents = useMatchEvents((s) => s.init);
-
+    
     // данные из стора
     const eventKey = useMatchEvents((s) => s.eventKey);
     const lastEvent = useMatchEvents((s) => s.lastEventUi);
     const score1 = useMatchEvents((s) => s.score1);
     const score2 = useMatchEvents((s) => s.score2);
+    const team1 = useMatchEvents((s) => s.team1);
+    const team2 = useMatchEvents((s) => s.team2);
 
     // локальные состояния для управления другими блоками (ожидание, состав и т.д.)
     const [openScore, setOpenScore] = React.useState(true);
@@ -41,7 +43,12 @@ function Main_Page() {
         <>
             {/* ======= ВЕРХНИЙ СЧЁТ ======= */}
             <SlideInOut isOpen={openScore} from="left" top={64} left={86} durationMs={500}>
-                <ScoreTop score1={score1} score2={score2} />
+                <ScoreTop
+                    team1Score={score1}
+                    team2Score={score2}
+                    team1={team1}
+                    team2={team2}
+                />
             </SlideInOut>
 
             {/* ======= СПОНСОРЫ СПРАВА ======= */}
