@@ -1,4 +1,6 @@
-import React, { useState, useCallback } from "react";
+import React, { useEffect } from "react";
+
+// ===== твои готовые блоки =====
 import ScoreTop from "../Blocks/ScoreTop/ScoreTop";
 import SponsorsTop from "../Blocks/SponsorsTop/SponsorsTop";
 import SlideInOut from "../Blocks/SlideInOut/SlideInOut";
@@ -7,60 +9,47 @@ import Waiting from "../Blocks/Waiting/Waiting";
 import MainLogo from "../Blocks/MainLogo/MainLogo";
 import StructureTeam from "../Blocks/StructureTeam/StructureTeam";
 import Plug from "../Blocks/Plug/Plug";
-import ControlPanel from "../Blocks/ControlPanel/ControlPanel";
 
-const TRANSITION_MS = 500;
+// ===== стор событий =====
+import { useMatchEvents } from "../../state/matchEvents";
 
-const player = {
-    name: "А. Агержаноков",
-    teamName: "ФК Ветерок",
-    photo: "football_team_player_photo.png",
-    teamLogo: "football_team_logo.png",
-};
+// id матча, можно потом получать из URL или пропсов
+const MATCH_ID = 7;
 
 function Main_Page() {
-    const [mode, setMode] = useState("none");
-    const [eventType, setEventType] = useState("yellow");
-    const [eventKey, setEventKey] = useState(0);
+    // инициализация сокета и слушателей
+    const initEvents = useMatchEvents((s) => s.init);
 
-    const is = {
-        score: mode === "score",
-        waiting: mode === "waiting",
-        break: mode === "break",
-        lineup: mode === "lineup",
-        plug: mode === "plug",
-    };
+    // данные из стора
+    const eventKey = useMatchEvents((s) => s.eventKey);
+    const lastEvent = useMatchEvents((s) => s.lastEventUi);
+    const score1 = useMatchEvents((s) => s.score1);
+    const score2 = useMatchEvents((s) => s.score2);
 
-    const switchMode = useCallback((next) => {
-        if (next === "event") {
-            if (mode !== "score") {
-                setMode("none");
-                setTimeout(() => setMode("score"), TRANSITION_MS);
-            }
-            setTimeout(() => setEventKey((k) => k + 1), TRANSITION_MS);
-            return;
-        }
-        if (next === "none" || mode === next) {
-            setMode("none");
-            return;
-        }
-        setMode("none");
-        setTimeout(() => setMode(next), TRANSITION_MS);
-    }, [mode]);
+    // локальные состояния для управления другими блоками (ожидание, состав и т.д.)
+    const [openScore, setOpenScore] = React.useState(true);
+    const [openWaiting, setOpenWaiting] = React.useState(false);
+    const [openBreak, setOpenBreak] = React.useState(false);
+    const [showSostav, setShowSostav] = React.useState(false);
+    const [showPlug, setShowPlug] = React.useState(false);
+
+    useEffect(() => {
+        initEvents(MATCH_ID); // подключаемся к матчу
+    }, [initEvents]);
 
     return (
         <>
-            {/* ЛЕВЫЙ СЧЁТ */}
-            <SlideInOut isOpen={is.score} from="left" top={64} left={86} durationMs={500}>
-                <ScoreTop />
+            {/* ======= ВЕРХНИЙ СЧЁТ ======= */}
+            <SlideInOut isOpen={openScore} from="left" top={64} left={86} durationMs={500}>
+                <ScoreTop score1={score1} score2={score2} />
             </SlideInOut>
 
-            {/* ПРАВЫЕ СПОНСОРЫ */}
-            <SlideInOut isOpen={is.score} from="right" top={47} right={86} durationMs={500}>
+            {/* ======= СПОНСОРЫ СПРАВА ======= */}
+            <SlideInOut isOpen={openScore} from="right" top={47} right={86} durationMs={500}>
                 <SponsorsTop />
             </SlideInOut>
 
-            {/* СОБЫТИЕ */}
+            {/* ======= НИЖНИЙ ВСПЛЫВАЮЩИЙ ИНФОБЛОК ======= */}
             <SlideInOut
                 from="left"
                 bottom={86}
@@ -69,35 +58,47 @@ function Main_Page() {
                 durationMs={500}
                 appearDelayMs={0}
                 exitDelayMs={500}
-                triggerKey={eventKey}
+                triggerKey={eventKey} // триггерит появление на каждый event+
             >
-                <InfoBlockBottom eventType={eventType} player={player} />
+                {lastEvent && (
+                    <InfoBlockBottom
+                        eventType={lastEvent.kind} // goal, yellow, red, penalty, penalty_missed
+                        player={{
+                            name: lastEvent.playerName,
+                            teamName: lastEvent.teamTitle,
+                            photo: lastEvent.playerPhoto || "football_team_player_photo.png",
+                            teamLogo: lastEvent.teamLogo || "football_team_logo.png",
+                            minute: lastEvent.minute,
+                            assistName: lastEvent.assistName,
+                        }}
+                    />
+                )}
             </SlideInOut>
 
-            {/* ОЖИДАНИЕ */}
-            <SlideInOut isOpen={is.waiting} from="top" top={64} left="50%" durationMs={500}>
+            {/* ======= ЭКРАН ОЖИДАНИЯ ======= */}
+            <SlideInOut isOpen={openWaiting} from="top" top={64} left="50%" durationMs={500}>
                 <MainLogo />
             </SlideInOut>
-            <SlideInOut isOpen={is.waiting} from="bottom" bottom={64} left="50%" durationMs={500}>
+            <SlideInOut isOpen={openWaiting} from="bottom" bottom={64} left="50%" durationMs={500}>
                 <Waiting />
             </SlideInOut>
 
-            {/* ПЕРЕРЫВ */}
-            <SlideInOut isOpen={is.break} from="top" top={64} left="50%" durationMs={500}>
+            {/* ======= ЭКРАН ПЕРЕРЫВА ======= */}
+            <SlideInOut isOpen={openBreak} from="top" top={64} left="50%" durationMs={500}>
                 <MainLogo />
             </SlideInOut>
-            <SlideInOut isOpen={is.break} from="bottom" bottom={64} left="50%" durationMs={500}>
-                <Waiting breakMatch />
+            <SlideInOut isOpen={openBreak} from="bottom" bottom={64} left="50%" durationMs={500}>
+                <Waiting breakMatch={true} />
             </SlideInOut>
 
-            {/* СОСТАВ */}
-            <SlideInOut isOpen={is.lineup} from="bottom" bottom="50%" left="50%" durationMs={500}>
+            {/* ======= СОСТАВ КОМАНД ======= */}
+            <SlideInOut isOpen={showSostav} from="bottom" bottom="50%" left="50%" durationMs={500}>
                 <StructureTeam />
             </SlideInOut>
 
-            {/* ЗАГЛУШКА */}
+            {/* ======= ЗАГЛУШКА ======= */}
             <SlideInOut
-                isOpen={is.plug}
+                isOpen={showPlug}
                 from="top"
                 top={0}
                 left={0}
@@ -108,13 +109,16 @@ function Main_Page() {
                 <Plug />
             </SlideInOut>
 
-            {/* ПУЛЬТ УПРАВЛЕНИЯ */}
-            <ControlPanel
-                mode={mode}
-                onSwitch={switchMode}
-                eventType={eventType}
-                onChangeEventType={setEventType}
-            />
+            {/* ======= КНОПКИ УПРАВЛЕНИЯ ======= */}
+            <div style={{ position: "fixed", top: 20, left: 20, zIndex: 2000, display: "flex", flexDirection: "column", gap: 8 }}>
+                <button onClick={() => setOpenScore((o) => !o)}>
+                    {openScore ? "Скрыть" : "Показать"} счёт
+                </button>
+                <button onClick={() => setOpenWaiting((o) => !o)}>Ожидание</button>
+                <button onClick={() => setOpenBreak((o) => !o)}>Перерыв</button>
+                <button onClick={() => setShowSostav((o) => !o)}>Состав</button>
+                <button onClick={() => setShowPlug((o) => !o)}>Заглушка</button>
+            </div>
         </>
     );
 }

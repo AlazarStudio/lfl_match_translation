@@ -24,7 +24,7 @@ function InfoBlockBottom({ children, eventType, player, ...props }) {
                     {eventType == 'red' && <img src="red.png" alt="" />}
                     {eventType == 'goal' && <img src="ball.png" alt="" />}
                 </div>
-                <div className={classes.infoBlockBottom_event_time}>23’</div>
+                <div className={classes.infoBlockBottom_event_time}>{player.minute}’</div>
             </div>
         </div>
     );
