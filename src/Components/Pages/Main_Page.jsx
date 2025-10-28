@@ -19,7 +19,7 @@ const MATCH_ID = 7;
 function Main_Page() {
     // инициализация сокета и слушателей
     const initEvents = useMatchEvents((s) => s.init);
-    
+
     // данные из стора
     const eventKey = useMatchEvents((s) => s.eventKey);
     const lastEvent = useMatchEvents((s) => s.lastEventUi);
@@ -87,7 +87,10 @@ function Main_Page() {
                 <MainLogo />
             </SlideInOut>
             <SlideInOut isOpen={openWaiting} from="bottom" bottom={64} left="50%" durationMs={500}>
-                <Waiting />
+                <Waiting
+                    team1={team1}
+                    team2={team2}
+                />
             </SlideInOut>
 
             {/* ======= ЭКРАН ПЕРЕРЫВА ======= */}
@@ -95,7 +98,13 @@ function Main_Page() {
                 <MainLogo />
             </SlideInOut>
             <SlideInOut isOpen={openBreak} from="bottom" bottom={64} left="50%" durationMs={500}>
-                <Waiting breakMatch={true} />
+                <Waiting
+                    breakMatch={true}
+                    team1={team1}
+                    team2={team2}
+                    team1Score={score1}
+                    team2Score={score2}
+                />
             </SlideInOut>
 
             {/* ======= СОСТАВ КОМАНД ======= */}
@@ -113,7 +122,10 @@ function Main_Page() {
                 right={0}
                 durationMs={500}
             >
-                <Plug />
+                <Plug
+                    team1={team1}
+                    team2={team2}
+                />
             </SlideInOut>
 
             {/* ======= КНОПКИ УПРАВЛЕНИЯ ======= */}

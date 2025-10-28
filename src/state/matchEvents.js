@@ -19,11 +19,13 @@ export const useMatchEvents = create((set, get) => ({
     halfMinutes: null,      // 15, 20, 45 ...
     isPaused: true,
     baseElapsedSec: 0,
-    startedAt: null,        // timestamp (ms)
+    startedAt: null,        // server timestamp (ms)
     addedSec: 0,
-    serverTimestamp: null,
-    formatted: "00:00",     // вычисляемая строка mm:ss
+    serverTimestamp: null,  // server "now" (ms)
+    formatted: "00:00",
   },
+  _clockTimerId: null,      // setInterval id
+  _clockOffsetMs: 0,        // Date.now() - serverNow
 
   // счёт
   score1: 0,
@@ -42,7 +44,7 @@ export const useMatchEvents = create((set, get) => ({
   async init(matchId) {
     set({ matchId });
 
-    // 1) Предзагрузка названий/логотипов + текущих значений счёта/событий (снапшот)
+    // 1) Предзагрузка снапшота
     try {
       const snap = await fetch(
         `${API_TM}/${matchId}?include=team1,team2,events`
@@ -58,7 +60,6 @@ export const useMatchEvents = create((set, get) => ({
         status: snap?.status ?? null,
       });
 
-      // заранее заполним антидубликаты уже существующими событиями
       if (Array.isArray(snap?.events)) {
         const ids = new Set(snap.events.map(e => e.id));
         set({ _shownEventIds: ids });
@@ -67,8 +68,8 @@ export const useMatchEvents = create((set, get) => ({
       console.warn("Не удалось загрузить снапшот матча", e);
     }
 
-    // 2) SOCKET: подключение и вход в комнату
-    const s = connectLive();
+    // 2) SOCKET
+    connectLive();
     joinRoom(`tmatch:${matchId}`);
     emit("tmatch:clock:get", { matchId }); // получить снимок часов
 
@@ -87,45 +88,64 @@ export const useMatchEvents = create((set, get) => ({
       if (p?.status) set({ status: p.status });
       if (typeof p?.team1Score !== "undefined") set({ score1: Number(p.team1Score) });
       if (typeof p?.team2Score !== "undefined") set({ score2: Number(p.team2Score) });
-      // если бэк начнёт слать team1/team2 тут — можно обновлять:
-      // if (p?.team1?.title || p?.team1?.logo) set({ team1: {...get().team1, ...normalizeTeam(p.team1)} });
-      // if (p?.team2?.title || p?.team2?.logo) set({ team2: {...get().team2, ...normalizeTeam(p.team2)} });
+      // if (p?.team1) set({ team1: { ...get().team1, ...normalizeTeam(p.team1) }});
+      // if (p?.team2) set({ team2: { ...get().team2, ...normalizeTeam(p.team2) }});
     });
 
-    // Часы
+    // Часы: обновляем offset и formatted
     const offClock = onLive("tmatch:clock", (c) => {
+      const serverNow = Number(c?.serverTimestamp || 0);
+      const offset = serverNow ? (Date.now() - serverNow) : 0; // клиентское - серверное
       const clock = {
         phase: c?.phase ?? null,
         half: c?.half ?? null,
         halfMinutes: c?.halfMinutes ?? null,
         isPaused: !!c?.isPaused,
         baseElapsedSec: Number(c?.baseElapsedSec || 0),
-        startedAt: c?.startedAt || null,
+        startedAt: c?.startedAt || null,     // server ms
         addedSec: Number(c?.addedSec || 0),
-        serverTimestamp: c?.serverTimestamp || null,
+        serverTimestamp: serverNow || null,
       };
-      set({ clock: { ...clock, formatted: fmtClock(clock) } });
+
+      set({
+        _clockOffsetMs: offset,
+        clock: { ...clock, formatted: fmtClock(clock, offset) },
+      });
     });
+
+    // Локальный «тик», чтобы время бежало между пушами
+    const startTick = () => {
+      const prev = get()._clockTimerId;
+      if (prev) clearInterval(prev);
+
+      const id = setInterval(() => {
+        const { clock, _clockOffsetMs } = get();
+        if (!clock) return;
+
+        const next = fmtClock(clock, _clockOffsetMs);
+        if (next !== clock.formatted) {
+          set({ clock: { ...clock, formatted: next } });
+        }
+      }, 250); // 4 раза в секунду — плавно, без лишних ререндеров
+
+      set({ _clockTimerId: id });
+    };
+    startTick();
 
     // События
     const offEvCreated = onLive("tevent:created", (ev) => {
-      // антидубликат
       const seen = get()._shownEventIds;
       if (seen.has(ev.id)) return;
       seen.add(ev.id);
 
-      // положим в очередь
       const ui = normalizeEvent(ev);
       const q = get()._eventQueue.slice();
       q.push({ ev, ui });
       set({ _eventQueue: q });
-
-      // запустим обработку очереди
       get()._drainQueue();
     });
 
     const offEvUpdated = onLive("tevent:updated", (ev) => {
-      // если обновили последний — перегенерим UI
       const last = get().lastEventRaw;
       if (last && last.id === ev.id) {
         set({ lastEventRaw: ev, lastEventUi: normalizeEvent(ev) });
@@ -134,16 +154,18 @@ export const useMatchEvents = create((set, get) => ({
 
     const offEvDeleted = onLive("tevent:deleted", (ev) => {
       const last = get().lastEventRaw;
-      if (last && last.id === ev.id) {
-        set({ lastEventRaw: null, lastEventUi: null });
-      }
+      if (last && last.id === ev.id) set({ lastEventRaw: null, lastEventUi: null });
     });
 
-    // вернём функцию очистки (на случай ручного dispose)
-    return () => { offScore(); offUpdate(); offClock(); offEvCreated(); offEvUpdated(); offEvDeleted(); };
+    // cleanup
+    return () => {
+      offScore(); offUpdate(); offClock(); offEvCreated(); offEvUpdated(); offEvDeleted();
+      const id = get()._clockTimerId;
+      if (id) { clearInterval(id); set({ _clockTimerId: null }); }
+    };
   },
 
-  // ручной показ события (можно вызывать из пульта, если потребуется)
+  // ручной показ события (например, с пульта)
   showEventManually(evPayload) {
     const ev = evPayload?.raw ? evPayload.raw : evPayload;
     const ui = evPayload?.ui ? evPayload.ui : normalizeEvent(ev);
@@ -153,7 +175,7 @@ export const useMatchEvents = create((set, get) => ({
     get()._drainQueue();
   },
 
-  // вспомогательное: отдать текущий "режим" трансляции на основе статуса
+  // режим трансляции на основе статуса
   getModeFromStatus() {
     const st = get().status;
     if (st === "LIVE") return "score";
@@ -173,18 +195,14 @@ export const useMatchEvents = create((set, get) => ({
       while (get()._eventQueue.length > 0) {
         const { ev, ui } = get()._eventQueue[0];
 
-        // показать текущий элемент
         set((st) => ({
           lastEventRaw: ev,
           lastEventUi: ui,
-          eventKey: st.eventKey + 1, // триггерим анимацию InfoBlockBottom
+          eventKey: st.eventKey + 1,
         }));
 
-        // ждём пока SlideInOut покажет/спрячет (showForMs + выход)
-        // подстрой под твой Timing: 5000ms + 500ms = 5500ms (запасом 5800)
-        await sleep(5800);
+        await sleep(5800); // showForMs(5000) + exitDelayMs(500) + запас
 
-        // убрать из очереди
         const rest = get()._eventQueue.slice(1);
         set({ _eventQueue: rest });
       }
@@ -236,12 +254,19 @@ function normalizeEvent(ev) {
   };
 }
 
-function fmtClock(c) {
-  // форматируем «бегущий» таймер, если не пауза
-  const now = Date.now();
+// учитываем смещение времени между клиентом и сервером
+function fmtClock(c, offsetMs = 0) {
   const base = Number(c.baseElapsedSec || 0);
-  const delta = !c.isPaused && c.startedAt ? Math.max(0, Math.floor((now - c.startedAt) / 1000)) : 0;
-  const total = base + delta + Number(c.addedSec || 0);
+  const added = Number(c.addedSec || 0);
+
+  let runningSec = 0;
+  if (!c.isPaused && c.startedAt) {
+    // «серверное сейчас» = Date.now() - offset
+    const serverNow = Date.now() - offsetMs;
+    runningSec = Math.max(0, Math.floor((serverNow - Number(c.startedAt)) / 1000));
+  }
+
+  const total = base + runningSec + added;
   const mm = Math.floor(total / 60);
   const ss = total % 60;
   return `${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;

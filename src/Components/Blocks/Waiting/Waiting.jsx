@@ -1,7 +1,7 @@
 import React from "react";
 import classes from './Waiting.module.css';
 
-function Waiting({ children, breakMatch = false, ...props }) {
+function Waiting({ children, breakMatch = false, team1, team2, team1Score, team2Score, ...props }) {
     return (
         <div className={classes.waiting}>
             <div className={classes.waitingLine}>
@@ -11,13 +11,13 @@ function Waiting({ children, breakMatch = false, ...props }) {
             </div>
             <div className={classes.waitingLine}>
                 <div className={classes.waitingLine_logo}>
-                    <img src="team1.png" alt="" />
+                    <img src={team1?.logo} alt="" />
                 </div>
-                <div className={classes.waitingLine_team}>ФК Ветерок</div>
-                <div className={classes.waitingLine_vs}>{breakMatch ? '0-2' : 'VS'}</div>
-                <div className={classes.waitingLine_team}>МЕККА</div>
+                <div className={classes.waitingLine_team}>{team1?.title}</div>
+                <div className={classes.waitingLine_vs}>{breakMatch ? `${team1Score} - ${team2Score}` : 'VS'}</div>
+                <div className={classes.waitingLine_team}>{team2?.title}</div>
                 <div className={classes.waitingLine_logo}>
-                    <img src="team2.png" alt="" />
+                    <img src={team2?.logo} alt="" />
                 </div>
             </div>
             <div className={classes.waitingLine}>

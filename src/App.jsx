@@ -6,6 +6,7 @@ import Non_Found_Page from "./Components/Pages/Non_Found_Page";
 import Layout from "./Components/Standart/Layout/Layout";
 import InstallButton from "./Components/Pages/InstallButton/InstallButton";
 import DevLiveProbe from "./DevLiveProbe";
+import DevClockProbe from "./DevClockProbe";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Main_Page />} />
           <Route path="/probe" element={<DevLiveProbe matchId={5} />} />
+          <Route path="/clock" element={<DevClockProbe />} />
           <Route path="*" element={<Non_Found_Page />} />
         </Route>
       </Routes>

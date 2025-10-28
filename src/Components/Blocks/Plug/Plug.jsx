@@ -1,7 +1,7 @@
 import React from "react";
 import classes from './Plug.module.css';
 
-function Plug({ children, ...props }) {
+function Plug({ children, team1, team2, ...props }) {
     return (
         <div className={classes.plug}>
             <div className={classes.plug_log}>
@@ -12,13 +12,13 @@ function Plug({ children, ...props }) {
             <div className={classes.waiting}>
                 <div className={classes.waitingLine}>
                     <div className={classes.waitingLine_logo}>
-                        <img src="team1.png" alt="" />
+                        <img src={team1?.logo} alt="" />
                     </div>
-                    <div className={classes.waitingLine_team}>ФК Ветерок</div>
+                    <div className={classes.waitingLine_team}>{team1?.title}</div>
                     <div className={classes.waitingLine_vs}>VS</div>
-                    <div className={classes.waitingLine_team}>МЕККА</div>
+                    <div className={classes.waitingLine_team}>{team2?.title}</div>
                     <div className={classes.waitingLine_logo}>
-                        <img src="team2.png" alt="" />
+                        <img src={team2?.logo} alt="" />
                     </div>
                 </div>
                 <div className={classes.waitingLine}>
