@@ -1,0 +1,100 @@
+.plug {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: url("plug.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 50% 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 100px;
+}
+
+.plug_log {
+    width: 255px;
+    height: 124px;
+}
+
+.plug_log img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.plug_name {
+    font-size: 128px;
+    color: #fff;
+    text-align: center;
+    font-family: 'Desonanz', sans-serif;
+}
+
+.waiting {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.waitingLine {
+    display: flex;
+    align-items: center;
+}
+
+.waitingLine_logo {
+    width: 200px;
+    height: 200px;
+    background-color: #000;
+}
+
+.waitingLine_logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.waitingLine_team {
+    width: 450px;
+    height: 150px;
+    background-color: #2A0054;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 48px;
+    color: #fff;
+}
+
+.waitingLine_vs {
+    width: 250px;
+    height: 150px;
+    background-color: #E5097F;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 48px;
+    color: #fff;
+}
+
+.waitingLine_wait {
+    width: 250px;
+    height: 60px;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 36px;
+    margin-bottom: -25px;
+}
+
+.waitingLine_sponsors {
+    width: 650px;
+    height: 100px;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -25px;
+}

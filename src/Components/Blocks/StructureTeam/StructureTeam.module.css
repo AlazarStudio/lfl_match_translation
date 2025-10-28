@@ -1,0 +1,112 @@
+.structureTeam {
+    width: 1593px;
+    height: 805px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    background: url("sostavBackground.png");
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.structureTeam_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 75px;
+    background-color: rgba(0, 0, 0, 0.64);
+}
+
+.structureTeam_header_logo {
+    width: 255px;
+    height: 71px;
+}
+
+.structureTeam_header_logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.structureTeam_header_sponsors {
+    width: 653px;
+    height: 75px;
+}
+
+.structureTeam_header_sponsors img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.structureTeam_main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 52px 118px;
+    gap: 116px;
+}
+
+.structureTeam_main_teamLogo {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 268px;
+}
+
+.structureTeam_main_teamLogo img {
+    width: 268px;
+    height: 268px;
+}
+
+.structureTeam_main_teamLogo_name {
+    font-size: 38px;
+    color: #fff;
+    text-align: center;
+}
+
+.structureTeam_main_teamList {
+    width: calc(100% - 268px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.structureTeam_main_teamList_item {
+    background-color: #2A0054;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 480px;
+    height: 60px;
+    padding: 0 10px;
+}
+
+.structureTeam_main_teamList_item_block {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+}
+
+.structureTeam_main_teamList_item_img {
+    width: 60px;
+    height: 60px;
+}
+
+.structureTeam_main_teamList_item_img img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.structureTeam_main_teamList_item_name {
+    color: #fff;
+    font-size: 24px;
+}
+
+.structureTeam_main_teamList_item_num {
+    color: #fff;
+    font-size: 32px;
+    margin-right: 15px;
+}

@@ -1,48 +1,66 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import ScoreTop from "../Blocks/ScoreTop/ScoreTop";
 import SponsorsTop from "../Blocks/SponsorsTop/SponsorsTop";
 import SlideInOut from "../Blocks/SlideInOut/SlideInOut";
 import InfoBlockBottom from "../Blocks/InfoBlockBottom/InfoBlockBottom";
 import Waiting from "../Blocks/Waiting/Waiting";
 import MainLogo from "../Blocks/MainLogo/MainLogo";
+import StructureTeam from "../Blocks/StructureTeam/StructureTeam";
+import Plug from "../Blocks/Plug/Plug";
+import ControlPanel from "../Blocks/ControlPanel/ControlPanel";
 
-function Main_Page({ children, ...props }) {
-    const [event, setEvent] = useState("yellow");
-    const [openScore, setOpenScore] = useState(false);
-    const [openWating, setOpenWating] = useState(false);
-    const [openBreak, setOpenBreak] = useState(false);
-    const [showEvent, setshowEvent] = useState(0);
-    const [isChange, setIsChange] = useState(false);
+const TRANSITION_MS = 500;
 
-    let player = {
-        name: "А. Агержаноков",
-        teamName: "ФК Ветерок",
-        photo: "football_team_player_photo.png",
-        teamLogo: "football_team_logo.png"
-    }
+const player = {
+    name: "А. Агержаноков",
+    teamName: "ФК Ветерок",
+    photo: "football_team_player_photo.png",
+    teamLogo: "football_team_logo.png",
+};
+
+function Main_Page() {
+    const [mode, setMode] = useState("none");
+    const [eventType, setEventType] = useState("yellow");
+    const [eventKey, setEventKey] = useState(0);
+
+    const is = {
+        score: mode === "score",
+        waiting: mode === "waiting",
+        break: mode === "break",
+        lineup: mode === "lineup",
+        plug: mode === "plug",
+    };
+
+    const switchMode = useCallback((next) => {
+        if (next === "event") {
+            if (mode !== "score") {
+                setMode("none");
+                setTimeout(() => setMode("score"), TRANSITION_MS);
+            }
+            setTimeout(() => setEventKey((k) => k + 1), TRANSITION_MS);
+            return;
+        }
+        if (next === "none" || mode === next) {
+            setMode("none");
+            return;
+        }
+        setMode("none");
+        setTimeout(() => setMode(next), TRANSITION_MS);
+    }, [mode]);
 
     return (
         <>
-            <SlideInOut
-                isOpen={openScore}
-                from="left"
-                top={64}
-                left={86}
-                durationMs={500}
-            >
+            {/* ЛЕВЫЙ СЧЁТ */}
+            <SlideInOut isOpen={is.score} from="left" top={64} left={86} durationMs={500}>
                 <ScoreTop />
             </SlideInOut>
 
-            <SlideInOut
-                isOpen={openScore}
-                from="right"
-                top={47}
-                right={86}
-                durationMs={500}
-            >
+            {/* ПРАВЫЕ СПОНСОРЫ */}
+            <SlideInOut isOpen={is.score} from="right" top={47} right={86} durationMs={500}>
                 <SponsorsTop />
             </SlideInOut>
 
+            {/* СОБЫТИЕ */}
             <SlideInOut
                 from="left"
                 bottom={86}
@@ -51,102 +69,52 @@ function Main_Page({ children, ...props }) {
                 durationMs={500}
                 appearDelayMs={0}
                 exitDelayMs={500}
-                triggerKey={showEvent}
+                triggerKey={eventKey}
             >
-                <InfoBlockBottom
-                    eventType={event}
-                    player={player}
-                />
+                <InfoBlockBottom eventType={eventType} player={player} />
             </SlideInOut>
 
-            <SlideInOut
-                isOpen={openWating}
-                from="top"
-                top={64}
-                left={"50%"}
-                durationMs={500}
-            >
+            {/* ОЖИДАНИЕ */}
+            <SlideInOut isOpen={is.waiting} from="top" top={64} left="50%" durationMs={500}>
                 <MainLogo />
             </SlideInOut>
-
-
-            <SlideInOut
-                isOpen={openWating}
-                from="bottom"
-                bottom={64}
-                left={"50%"}
-                durationMs={500}
-            >
+            <SlideInOut isOpen={is.waiting} from="bottom" bottom={64} left="50%" durationMs={500}>
                 <Waiting />
             </SlideInOut>
 
-            <SlideInOut
-                isOpen={openBreak}
-                from="top"
-                top={64}
-                left={"50%"}
-                durationMs={500}
-            >
+            {/* ПЕРЕРЫВ */}
+            <SlideInOut isOpen={is.break} from="top" top={64} left="50%" durationMs={500}>
                 <MainLogo />
             </SlideInOut>
-
-
-            <SlideInOut
-                isOpen={openBreak}
-                from="bottom"
-                bottom={64}
-                left={"50%"}
-                durationMs={500}
-            >
-                <Waiting breakMatch={true} />
+            <SlideInOut isOpen={is.break} from="bottom" bottom={64} left="50%" durationMs={500}>
+                <Waiting breakMatch />
             </SlideInOut>
 
-            <button onClick={() => {
-                setOpenWating(false)
-                setOpenBreak(false)
+            {/* СОСТАВ */}
+            <SlideInOut isOpen={is.lineup} from="bottom" bottom="50%" left="50%" durationMs={500}>
+                <StructureTeam />
+            </SlideInOut>
 
-                setTimeout(() => {
-                    setOpenScore(o => !o)
-                }, 500)
-            }}>
-                {openScore ? 'Скрыть' : "Показать"} счет и спонсоров
-            </button>
+            {/* ЗАГЛУШКА */}
+            <SlideInOut
+                isOpen={is.plug}
+                from="top"
+                top={0}
+                left={0}
+                bottom={0}
+                right={0}
+                durationMs={500}
+            >
+                <Plug />
+            </SlideInOut>
 
-            <button onClick={() => {
-                setOpenScore(true)
-                setOpenWating(false)
-                setOpenBreak(false)
-
-                setTimeout(() => {
-                    setshowEvent(k => k + 1)
-                }, 500)
-            }}>
-                Событие
-            </button>
-
-            <button onClick={() => {
-                setOpenScore(false)
-                setOpenBreak(false)
-
-                setTimeout(() => {
-                    setOpenWating(o => !o);
-                }, 500)
-
-            }}>
-                Ожидание
-            </button>
-
-            <button onClick={() => {
-                setOpenWating(false);
-                setOpenScore(false)
-
-                setTimeout(() => {
-                    setOpenBreak(o => !o);
-                }, 500)
-            }}>
-                Перерыв
-            </button>
-
+            {/* ПУЛЬТ УПРАВЛЕНИЯ */}
+            <ControlPanel
+                mode={mode}
+                onSwitch={switchMode}
+                eventType={eventType}
+                onChangeEventType={setEventType}
+            />
         </>
     );
 }
