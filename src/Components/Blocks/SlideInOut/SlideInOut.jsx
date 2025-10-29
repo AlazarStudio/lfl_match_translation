@@ -15,7 +15,7 @@ function SlideInOut({
     exitDelayMs = 0,
     durationMs = 350,
 
-    extraOffsetPx = 500,
+    extraOffsetPx = 1500,
     zIndex = 1000,
 
     onEntered,

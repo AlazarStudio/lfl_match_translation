@@ -48,7 +48,7 @@ function Main_Page() {
     return (
         <>
             {/* ======= ВЕРХНИЙ СЧЁТ ======= */}
-            <SlideInOut isOpen={isScoreOpen} from="left" top={64} left={86} durationMs={500}>
+            <SlideInOut isOpen={overlay?.OpenScore ?? false} from="left" top={64} left={86} durationMs={500}>
                 <ScoreTop
                     team1Score={score1}
                     team2Score={score2}
@@ -58,7 +58,7 @@ function Main_Page() {
             </SlideInOut>
 
             {/* ======= СПОНСОРЫ СПРАВА ======= */}
-            <SlideInOut isOpen={isScoreOpen} from="right" top={47} right={86} durationMs={500}>
+            <SlideInOut isOpen={overlay?.OpenScore ?? false} from="right" top={47} right={86} durationMs={500}>
                 <SponsorsTop />
             </SlideInOut>
 
@@ -114,8 +114,12 @@ function Main_Page() {
             </SlideInOut>
 
             {/* ======= СОСТАВ КОМАНД ======= */}
-            <SlideInOut isOpen={overlay?.ShowSostav ?? false} from="bottom" bottom="50%" left="50%" durationMs={500}>
-                <StructureTeam />
+            <SlideInOut isOpen={overlay?.ShowSostavTeam1 ?? false} from="bottom" bottom="50%" left="50%" durationMs={500}>
+                <StructureTeam team={team1} />
+            </SlideInOut>
+
+            <SlideInOut isOpen={overlay?.ShowSostavTeam2 ?? false} from="bottom" bottom="50%" left="50%" durationMs={500}>
+                <StructureTeam team={team2} />
             </SlideInOut>
 
             {/* ======= ЗАГЛУШКА ======= */}

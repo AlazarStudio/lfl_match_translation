@@ -1,5 +1,9 @@
 import { create } from "zustand";
-import { connectLive, joinRoom, onLive, emit, onOverlay, overlayGet } from "../services/liveSocket";
+import {
+  connectLive, joinRoom, onLive, emit,
+  onOverlay, overlayGet,
+  requestLineups, onLineup
+} from "../services/liveSocket";
 
 const API_BASE = "https://backend.mlf09.ru";
 const API_TM = `${API_BASE}/api/tournament-matches`;
@@ -7,7 +11,7 @@ const API_TM = `${API_BASE}/api/tournament-matches`;
 export const useMatchEvents = create((set, get) => ({
   matchId: null,
   // дефолт — чтобы страница не была пустой до прихода состояния
-  overlay: { OpenScore: true, OpenWaiting: false, OpenBreak: false, ShowPlug: false, ShowSostav: false },
+  overlay: { OpenScore: false, OpenWaiting: false, OpenBreak: false, ShowPlug: false, ShowSostav: false },
   // удобные методы для страницы/пульта
   setOverlayKey(key, value) {
     const matchId = get().matchId;
@@ -178,6 +182,20 @@ export const useMatchEvents = create((set, get) => ({
       if (last && last.id === ev.id) set({ lastEventRaw: null, lastEventUi: null });
     });
 
+    // 6) НОВОЕ: Составы (по сокету)
+    const offLineup = onLineup(({ team1, team2 }) => {
+      // ожидается структура от бэка: { team1: { title, list: [...] }, team2: { title, list: [...] } }
+      const t1 = normalizeIncomingTeam(team1);
+      const t2 = normalizeIncomingTeam(team2);
+
+      set((st) => ({
+        team1: { ...(st.team1 || {}), ...t1 },
+        team2: { ...(st.team2 || {}), ...t2 },
+      }));
+    });
+
+    // сразу попросим сервер прислать составы
+    requestLineups(matchId);
     // cleanup
     return () => {
       offScore(); offUpdate(); offClock(); offEvCreated(); offEvUpdated(); offEvDeleted(); offOverlay && offOverlay();
@@ -295,4 +313,28 @@ function fmtClock(c, offsetMs = 0) {
 
 function sleep(ms) {
   return new Promise(r => setTimeout(r, ms));
+}
+
+function normalizeIncomingTeam(raw) {
+  if (!raw) return { title: "", lineup: [] };
+  const title = raw.title ?? "";
+  const list = Array.isArray(raw.list) ? raw.list : [];
+
+  const lineup = list.map((p) => ({
+    id: p.id ?? `${p.playerId || ""}-${p.number || ""}`,
+    num: p.number ?? p.num ?? null,
+    name: p.name || p.player?.name || "",
+    short: shortName(p.name || p.player?.name || ""),
+    photo: abs(p.photo || p.player?.images?.[0]),
+    pos: p.position || p.player?.position || null,
+  }));
+
+  return { title, lineup };
+}
+
+function shortName(name) {
+  if (!name) return "";
+  const parts = name.split(" ").filter(Boolean);
+  if (parts.length >= 2) return `${parts[0][0]}. ${parts.slice(1).join(" ")}`;
+  return name;
 }

@@ -16,7 +16,7 @@ export function connectLive(url = "https://backend.mlf09.ru", path = "/socket.io
     // полный лог всех событий (временно)
     socket.onAny((event, ...args) => {
         if (event.startsWith("pong")) return;
-        console.log("[live] ANY:", event, args?.[0]);
+        // console.log("[live] ANY:", event, args?.[0]);
     });
 
     return socket;
@@ -59,4 +59,14 @@ export function overlayToggle(matchId, key) {
 export function onOverlay(cb) {
     // пример бэка: socket.on('tmatch:overlay', (state) => ...)
     return onLive("tmatch:overlay", cb);
+}
+
+// сервер ожидает: socket.emit("join", { matchId });
+export function requestLineups(matchId) {
+    emit("join", { matchId });
+}
+
+// сервер шлёт: socket.on("tmatch:lineup", ({ team1, team2 }) => { ... })
+export function onLineup(cb) {
+    return onLive("tmatch:lineup", cb);
 }
