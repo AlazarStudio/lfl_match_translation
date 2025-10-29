@@ -10,12 +10,12 @@ import {
 
 // какие ключи управляем с пульта (взаимоисключаемые)
 const OVERLAY_KEYS = [
-    { key: "OpenScore", label: "Счёт + Спонсоры (OpenScore)" },
+    { key: "ShowPlug", label: "Заглушка (ShowPlug)" },
     { key: "OpenWaiting", label: "Экран ожидания (OpenWaiting)" },
-    { key: "OpenBreak", label: "Перерыв (OpenBreak)" },
     { key: "ShowSostavTeam1", label: "Состав команды 1 (ShowSostavTeam1)" },
     { key: "ShowSostavTeam2", label: "Состав команды 2 (ShowSostavTeam2)" },
-    { key: "ShowPlug", label: "Заглушка (ShowPlug)" },
+    { key: "OpenScore", label: "Счёт + Спонсоры (OpenScore)" },
+    { key: "OpenBreak", label: "Перерыв (OpenBreak)" },
 ];
 const EXCLUSIVE_KEYS = OVERLAY_KEYS.map(k => k.key);
 

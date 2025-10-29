@@ -8,10 +8,10 @@ export function connectLive(url = "https://backend.mlf09.ru", path = "/socket.io
     if (socket) return socket;
     socket = io(url, { path, transports: ["websocket", "polling"], withCredentials: true });
 
-    socket.on("connect", () => console.log("[live] connected", socket.id));
-    socket.on("disconnect", (r) => console.log("[live] disconnected:", r));
-    socket.on("connect_error", (e) => console.log("[live] connect_error:", e?.message || e));
-    socket.on("error", (e) => console.log("[live] error:", e));
+    // socket.on("connect", () => console.log("[live] connected", socket.id));
+    // socket.on("disconnect", (r) => console.log("[live] disconnected:", r));
+    // socket.on("connect_error", (e) => console.log("[live] connect_error:", e?.message || e));
+    // socket.on("error", (e) => console.log("[live] error:", e));
 
     // полный лог всех событий (временно)
     socket.onAny((event, ...args) => {
