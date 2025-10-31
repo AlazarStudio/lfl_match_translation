@@ -307,7 +307,7 @@ function sleep(ms) {
 
 /** переводим то, что прислал сокет по lineup, в то, что ждёт компонент */
 function toPlayer(p) {
-  console.log(p)
+  // console.log(p)
   return {
     id: p.rosterItemId ?? p.playerId ?? Math.random(),
     num: p.number ?? "",

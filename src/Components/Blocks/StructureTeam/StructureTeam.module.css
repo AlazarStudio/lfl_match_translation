@@ -58,7 +58,7 @@
 .structureTeam_main_teamLogo_img {
     width: 268px;
     height: 268px;
-    background-color: #fff;
+    /* background-color: #fff; */
 }
 
 .structureTeam_main_teamLogo_img img{

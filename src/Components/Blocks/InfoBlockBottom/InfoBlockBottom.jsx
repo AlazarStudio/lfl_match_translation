@@ -13,7 +13,7 @@ function InfoBlockBottom({ children, eventType, player, ...props }) {
                         <img src={`${player.photo ? player.photo : "no-img.webp"}`} alt="" />
                     </div>
                     <div className={classes.infoBlockBottom_player_info}>
-                        <div className={classes.infoBlockBottom_player_info_name}>{player.name}</div>
+                        <div className={classes.infoBlockBottom_player_info_name}>{player.name.split("-")[0]+'-'+player.name.split("-")[1][0]}</div>
                         <div className={classes.infoBlockBottom_player_info_teamName}>{player.teamName}</div>
                     </div>
                 </div>

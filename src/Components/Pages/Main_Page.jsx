@@ -28,6 +28,8 @@ function Main_Page({ MATCH_ID }) {
     const team1 = useMatchEvents((s) => s.team1);
     const team2 = useMatchEvents((s) => s.team2);
 
+    // console.log(lastEvent)
+
     const overlay = useMatchEvents((s) => s.overlay);
     const setOverlayKey = useMatchEvents((s) => s.setOverlayKey);
     const toggleOverlayKey = useMatchEvents((s) => s.toggleOverlayKey);
