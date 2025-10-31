@@ -4,7 +4,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    background: url("plug.png");
+    background: url("/plug.png");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 50% 50%;
