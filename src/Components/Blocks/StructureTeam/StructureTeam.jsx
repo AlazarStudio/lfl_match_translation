@@ -24,7 +24,7 @@ function StructureTeam({ children, team, ...props }) {
                         return (
                             <div key={player.rosterItemId || player.playerId || player.id} className={classes.structureTeam_main_teamList_item}>
                                 <div className={classes.structureTeam_main_teamList_item_block}>
-                                    <div className={classes.structureTeam_main_teamList_item_img}><img src={`${player.photo ? player.photo : "no-img.webp"}`} alt="" /></div>
+                                    <div className={classes.structureTeam_main_teamList_item_img}><img src={`https://backend.mlf09.ru${player.photo ? player.photo : "no-img.webp"}`} alt="" /></div>
                                     <div className={classes.structureTeam_main_teamList_item_name}>{player.short}</div>
                                 </div>
                                 <div className={classes.structureTeam_main_teamList_item_num}>{player.num}</div>

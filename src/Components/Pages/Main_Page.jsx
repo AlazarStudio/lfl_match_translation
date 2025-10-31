@@ -44,16 +44,6 @@ function Main_Page({ MATCH_ID }) {
     }, [initEvents]);
 
     const isScoreOpen = overlay?.OpenScore ?? true;
-
-    useEffect(() => {
-        const handleBeforeUnload = (e) => {
-            e.preventDefault();
-            e.returnValue = "Вы действительно хотите обновить?";
-        };
-
-        window.addEventListener("beforeunload", handleBeforeUnload);
-        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-    }, []);
     return (
         <>
             {/* ======= ВЕРХНИЙ СЧЁТ ======= */}

@@ -307,7 +307,7 @@ function sleep(ms) {
 
 /** переводим то, что прислал сокет по lineup, в то, что ждёт компонент */
 function toPlayer(p) {
-  // console.log(p)
+  console.log(p)
   return {
     id: p.rosterItemId ?? p.playerId ?? Math.random(),
     num: p.number ?? "",
@@ -316,7 +316,7 @@ function toPlayer(p) {
     pos: p.position ?? "",
     role: p.role ?? "",
     isCaptain: !!p.isCaptain,
-    photo: null, // пока бэк фото сюда не кладёт
+    photo: p.photo, // пока бэк фото сюда не кладёт
   };
 }
 
