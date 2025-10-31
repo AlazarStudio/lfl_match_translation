@@ -351,15 +351,15 @@ const styles = {
     list: {
         display: "flex",
         flexDirection: "column",
-        gap: 12,
+        // gap: 12,
     },
     dateHeader: {
         fontWeight: 600,
         fontSize: 14,
         opacity: 0.8,
-        margin: "18px 0 6px 2px",
+        margin: "15px 0 6px 2px",
         borderBottom: "1px solid rgba(255,255,255,0.1)",
-        paddingBottom: 4,
+        paddingBottom: 10,
     },
     item: {
         background: "rgba(255,255,255,0.03)",
@@ -371,6 +371,7 @@ const styles = {
         justifyContent: "space-between",
         gap: 12,
         flexWrap: "wrap",
+        marginBottom: 10
     },
     title: {
         fontWeight: 500,

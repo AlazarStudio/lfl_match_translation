@@ -9,6 +9,7 @@ import {
 } from "../../services/liveSocket";
 import { useMatchSelection } from "../../state/matchSelection";
 import { useMatchEvents } from "../../state/matchEvents";
+import { useNavigate } from "react-router-dom";
 
 // какие ключи управляем с пульта (взаимоисключаемые)
 const OVERLAY_KEYS = [
@@ -91,10 +92,14 @@ export default function OverlayPanel() {
         }
     };
 
+    const navigate = useNavigate();
+
     return (
         <div style={styles.wrap}>
             <div style={styles.card}>
-                <h2 style={{ marginTop: 0, marginBottom: 20 }} onClick={window.open("/")}>Вернуться к турнирам</h2>
+                <button style={styles.backBtn} onClick={() => navigate("/")}>
+                    ← Назад
+                </button>
                 <h2 style={{ marginTop: 0, marginBottom: 20 }}>Пульт управления трансляцией</h2>
 
                 <div style={styles.row} >
@@ -158,7 +163,7 @@ export default function OverlayPanel() {
                     </pre>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 
@@ -177,4 +182,13 @@ const styles = {
     stateBox: { marginTop: 12, border: "1px solid #2a2f3a", borderRadius: 8, overflow: "hidden" },
     stateHeader: { padding: "8px 10px", background: "#202532", borderBottom: "1px solid #2a2f3a", display: "flex", alignItems: "center" },
     pre: { margin: 0, padding: 12, overflowX: "auto", fontSize: 13, lineHeight: 1.35 },
+    backBtn: {
+        background: "transparent",
+        border: "1px solid rgba(255,255,255,0.2)",
+        borderRadius: 6,
+        padding: "4px 10px",
+        color: "#fff",
+        cursor: "pointer",
+        marginBottom: 20
+    },
 };
