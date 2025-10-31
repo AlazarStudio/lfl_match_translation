@@ -18,13 +18,13 @@ function StructureTeam({ children, team, ...props }) {
                     <div className={classes.structureTeam_main_teamLogo_name}>{`${team?.title ? team?.title : "Название команды"}`}</div>
                 </div>
                 <div className={classes.structureTeam_main_teamList}>
-                    {team?.lineup?.length > 0 ? team?.lineup.map((item) => {
+                    {team?.lineup?.length > 0 ? team?.lineup.map((player) => {
                         <div className={classes.structureTeam_main_teamList_item}>
                             <div className={classes.structureTeam_main_teamList_item_block}>
-                                <div className={classes.structureTeam_main_teamList_item_img}><img src="football_team_player_photo.png" alt="" /></div>
-                                <div className={classes.structureTeam_main_teamList_item_name}>А. Агержаноков</div>
+                                <div className={classes.structureTeam_main_teamList_item_img}><img src={`${player.photo ? player.photo : "no-img.webp"}`} alt="" /></div>
+                                <div className={classes.structureTeam_main_teamList_item_name}>{player.name}</div>
                             </div>
-                            <div className={classes.structureTeam_main_teamList_item_num}>10</div>
+                            <div className={classes.structureTeam_main_teamList_item_num}>{player.num}</div>
                         </div>
                     }) : <div className={classes.structureTeam_main_teamList_item_name}>Список игроков команды {team?.title ?  team?.title : '"Название команды"'} пуст</div>}
                 </div>

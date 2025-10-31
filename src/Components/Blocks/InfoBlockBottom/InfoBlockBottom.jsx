@@ -10,7 +10,7 @@ function InfoBlockBottom({ children, eventType, player, ...props }) {
                 </div>
                 <div className={classes.infoBlockBottom_player}>
                     <div className={classes.infoBlockBottom_player_photo}>
-                        <img src={`${player.photo}`} alt="" />
+                        <img src={`${player.photo ? player.photo : "no-img.webp"}`} alt="" />
                     </div>
                     <div className={classes.infoBlockBottom_player_info}>
                         <div className={classes.infoBlockBottom_player_info_name}>{player.name}</div>
