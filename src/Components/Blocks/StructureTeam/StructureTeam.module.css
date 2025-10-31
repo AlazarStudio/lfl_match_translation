@@ -55,9 +55,16 @@
     width: 268px;
 }
 
-.structureTeam_main_teamLogo img {
+.structureTeam_main_teamLogo_img {
     width: 268px;
     height: 268px;
+    background-color: #fff;
+}
+
+.structureTeam_main_teamLogo_img img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .structureTeam_main_teamLogo_name {

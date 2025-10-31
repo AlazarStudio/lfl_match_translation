@@ -14,9 +14,9 @@ import Plug from "../Blocks/Plug/Plug";
 import { useMatchEvents } from "../../state/matchEvents";
 
 // id матча, можно потом получать из URL или пропсов
-const MATCH_ID = 7;
 
-function Main_Page() {
+
+function Main_Page({MATCH_ID}) {
     // инициализация сокета и слушателей
     const initEvents = useMatchEvents((s) => s.init);
 
@@ -44,6 +44,8 @@ function Main_Page() {
     }, [initEvents]);
 
     const isScoreOpen = overlay?.OpenScore ?? true;
+
+    // console.log(team1)
 
     return (
         <>

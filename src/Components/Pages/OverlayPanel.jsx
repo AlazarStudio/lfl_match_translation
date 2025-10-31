@@ -19,8 +19,8 @@ const OVERLAY_KEYS = [
 ];
 const EXCLUSIVE_KEYS = OVERLAY_KEYS.map(k => k.key);
 
-export default function OverlayPanel() {
-    const [matchId, setMatchId] = useState(7);
+export default function OverlayPanel({MATCH_ID}) {
+    const [matchId, setMatchId] = useState(MATCH_ID);
     const [overlay, setOverlay] = useState(null);
     const [busy, setBusy] = useState(false);
 

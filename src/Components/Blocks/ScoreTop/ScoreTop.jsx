@@ -5,6 +5,8 @@ import { useMatchEvents } from "../../../state/matchEvents";
 function ScoreTop({ children, team1Score, team2Score, team1, team2, ...props }) {
     const clock = useMatchEvents((s) => s.clock);
     const timeText = clock?.formatted || "00:00";
+
+    // console.log(team1)
     return (
         <div className={classes.scoreTop}>
             <div className={classes.scoreTop_logo}>
