@@ -9,20 +9,19 @@ import DevLiveProbe from "./DevLiveProbe";
 import DevClockProbe from "./DevClockProbe";
 import OverlayPanel from "./Components/Pages/OverlayPanel";
 import LineupTest from "./Components/Pages/LineupTest";
+import MatchList from "./Components/Pages/MatchList";
 
 function App() {
-  const MATCH_ID = 14;
-
   return (
     <>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Main_Page MATCH_ID={MATCH_ID} />} />
-          <Route path="/overlay" element={<OverlayPanel MATCH_ID={MATCH_ID} />} />
-          <Route path="/LineupTest" element={<LineupTest MATCH_ID={MATCH_ID} />} />
+          <Route index element={<MatchList />} />
 
-          <Route path="/probe" element={<DevLiveProbe />} />
-          <Route path="/clock" element={<DevClockProbe />} />
+          <Route path="/live" element={<Main_Page />} />
+
+          <Route path="/overlay" element={<OverlayPanel />} />
+
           <Route path="*" element={<Non_Found_Page />} />
         </Route>
       </Routes>

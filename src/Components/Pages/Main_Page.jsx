@@ -12,13 +12,29 @@ import Plug from "../Blocks/Plug/Plug";
 
 // ===== стор событий =====
 import { useMatchEvents } from "../../state/matchEvents";
+import { useMatchSelection } from "../../state/matchSelection";
 
 // id матча, можно потом получать из URL или пропсов
 
 
-function Main_Page({ MATCH_ID }) {
+function Main_Page() {
     // инициализация сокета и слушателей
     const initEvents = useMatchEvents((s) => s.init);
+
+    const selectedMatchId = useMatchSelection((s) => s.selectedMatchId) || localStorage.getItem("matchId");
+
+    useEffect(() => {
+        if (!selectedMatchId) return;
+        initEvents(selectedMatchId);
+    }, [selectedMatchId, initEvents]);
+
+    if (!selectedMatchId) {
+        return (
+            <div style={{ color: "#000", padding: 24 }}>
+                Матч не выбран. Сначала выбери матч на главной.
+            </div>
+        );
+    }
 
     // данные из стора
     const eventKey = useMatchEvents((s) => s.eventKey);
@@ -41,9 +57,9 @@ function Main_Page({ MATCH_ID }) {
     const [showSostav, setShowSostav] = React.useState(false);
     const [showPlug, setShowPlug] = React.useState(false);
 
-    useEffect(() => {
-        initEvents(MATCH_ID); // подключаемся к матчу
-    }, [initEvents]);
+    // useEffect(() => {
+    //     initEvents(MATCH_ID); // подключаемся к матчу
+    // }, [initEvents]);
 
     const isScoreOpen = overlay?.OpenScore ?? true;
     return (

@@ -7,6 +7,8 @@ import {
     overlayGet,
     overlaySet,
 } from "../../services/liveSocket";
+import { useMatchSelection } from "../../state/matchSelection";
+import { useMatchEvents } from "../../state/matchEvents";
 
 // какие ключи управляем с пульта (взаимоисключаемые)
 const OVERLAY_KEYS = [
@@ -19,10 +21,27 @@ const OVERLAY_KEYS = [
 ];
 const EXCLUSIVE_KEYS = OVERLAY_KEYS.map(k => k.key);
 
-export default function OverlayPanel({MATCH_ID}) {
-    const [matchId, setMatchId] = useState(MATCH_ID);
+export default function OverlayPanel() {
+    const selectedMatchId = useMatchSelection((s) => s.selectedMatchId) || localStorage.getItem("matchId");
+
+    const initEvents = useMatchEvents((s) => s.init);
+
+    const [matchId, setMatchId] = useState(selectedMatchId);
     const [overlay, setOverlay] = useState(null);
     const [busy, setBusy] = useState(false);
+
+    useEffect(() => {
+        if (!selectedMatchId) return;
+        initEvents(selectedMatchId);
+    }, [selectedMatchId, initEvents]);
+
+    if (!selectedMatchId) {
+        return (
+            <div style={{ color: "#000", padding: 24 }}>
+                Матч не выбран. Сначала выбери матч на главной.
+            </div>
+        );
+    }
 
     useEffect(() => { connectLive(); }, []);
 
@@ -75,9 +94,9 @@ export default function OverlayPanel({MATCH_ID}) {
     return (
         <div style={styles.wrap}>
             <div style={styles.card}>
-                <h2 style={{ marginTop: 0 }}>Пульт управления трансляцией</h2>
+                <h2 style={{ marginTop: 0, marginBottom: 20 }}>Пульт управления трансляцией</h2>
 
-                <div style={styles.row}>
+                <div style={styles.row} >
                     <label style={styles.label}>Match ID:</label>
                     <input
                         type="number"
@@ -145,7 +164,7 @@ export default function OverlayPanel({MATCH_ID}) {
 const styles = {
     wrap: { minHeight: "100vh", background: "#0f1115", color: "#e6e6e6", padding: 24, boxSizing: "border-box" },
     card: { maxWidth: 960, margin: "0 auto", background: "#181b22", border: "1px solid #2a2f3a", borderRadius: 12, padding: 16, boxSizing: "border-box", boxShadow: "0 10px 30px rgba(0,0,0,0.35)" },
-    row: { display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: 12 },
+    row: { display: "none", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: 12 },
     label: { minWidth: 90, opacity: 0.85 },
     input: { width: 120, background: "#0f1115", border: "1px solid #2a2f3a", color: "#e6e6e6", borderRadius: 8, padding: "8px 10px", outline: "none" },
     btn: { background: "#2b8a3e", border: "none", color: "white", borderRadius: 8, padding: "8px 12px", cursor: "pointer" },
