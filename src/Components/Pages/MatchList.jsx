@@ -258,12 +258,12 @@ export default function MatchList() {
                                                     </div>
                                                 </div>
 
-                                                <div style={{ ...styles.lineJC, ...(window.innerWidth > 500 ? {} : styles.btnWidth) }}>
-                                                    {window.innerWidth > 500 &&
+                                                <div style={{ ...styles.lineJC, ...(window.innerWidth > 768 ? {} : styles.btnWidth) }}>
+                                                    {window.innerWidth > 768 &&
                                                         <button
                                                             style={styles.btn}
                                                             onClick={() => handleConnect(m.id)}
-                                                            disabled={window.innerWidth > 500 ? false : true}
+                                                            disabled={window.innerWidth > 768 ? false : true}
                                                         >
                                                             Подключиться
                                                         </button>
