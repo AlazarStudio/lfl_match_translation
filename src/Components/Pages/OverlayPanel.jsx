@@ -94,6 +94,7 @@ export default function OverlayPanel() {
     return (
         <div style={styles.wrap}>
             <div style={styles.card}>
+                <h2 style={{ marginTop: 0, marginBottom: 20 }} onClick={window.open("/")}>Вернуться к турнирам</h2>
                 <h2 style={{ marginTop: 0, marginBottom: 20 }}>Пульт управления трансляцией</h2>
 
                 <div style={styles.row} >

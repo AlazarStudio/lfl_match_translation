@@ -131,7 +131,7 @@ export default function MatchList() {
     const handleManage = (matchId) => {
         localStorage.setItem("matchId", matchId);
         setSelectedMatchId(matchId);
-        window.open("/overlay", "_blank");
+        navigate("/overlay");
     };
 
     // поиск по матчам
