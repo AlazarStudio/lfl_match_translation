@@ -16,7 +16,7 @@ import { useMatchEvents } from "../../state/matchEvents";
 // id матча, можно потом получать из URL или пропсов
 
 
-function Main_Page({MATCH_ID}) {
+function Main_Page({ MATCH_ID }) {
     // инициализация сокета и слушателей
     const initEvents = useMatchEvents((s) => s.init);
 
@@ -45,8 +45,15 @@ function Main_Page({MATCH_ID}) {
 
     const isScoreOpen = overlay?.OpenScore ?? true;
 
-    // console.log(team1)
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            e.preventDefault();
+            e.returnValue = "Вы действительно хотите обновить?";
+        };
 
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, []);
     return (
         <>
             {/* ======= ВЕРХНИЙ СЧЁТ ======= */}

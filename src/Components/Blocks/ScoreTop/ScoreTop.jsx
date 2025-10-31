@@ -4,7 +4,7 @@ import { useMatchEvents } from "../../../state/matchEvents";
 
 function ScoreTop({ children, team1Score, team2Score, team1, team2, ...props }) {
     const clock = useMatchEvents((s) => s.clock);
-    const timeText = clock?.formatted || "00:00";
+    const timeText = clock?.formatted ;
 
     // console.log(team1)
     return (
