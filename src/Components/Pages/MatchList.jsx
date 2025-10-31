@@ -254,6 +254,7 @@ export default function MatchList() {
                                                             ...styles.status,
                                                         }}
                                                     >
+                                                        {/* ID: {m.id} ·  */}
                                                         статус: <span style={{ ...(isLive ? styles.statusLive : {}) }}>{m.status || "—"}</span>
                                                     </div>
                                                 </div>
