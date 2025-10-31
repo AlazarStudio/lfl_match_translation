@@ -254,17 +254,20 @@ export default function MatchList() {
                                                             ...styles.status,
                                                         }}
                                                     >
-                                                        статус: <span style={{ ...(isLive ? styles.statusLive : {})}}>{m.status || "—"}</span>
+                                                        статус: <span style={{ ...(isLive ? styles.statusLive : {}) }}>{m.status || "—"}</span>
                                                     </div>
                                                 </div>
 
-                                                <div style={styles.lineJC}>
-                                                    <button
-                                                        style={styles.btn}
-                                                        onClick={() => handleConnect(m.id)}
-                                                    >
-                                                        Подключиться
-                                                    </button>
+                                                <div style={{ ...styles.lineJC, ...(window.innerWidth > 500 ? {} : styles.btnWidth) }}>
+                                                    {window.innerWidth > 500 &&
+                                                        <button
+                                                            style={styles.btn}
+                                                            onClick={() => handleConnect(m.id)}
+                                                            disabled={window.innerWidth > 500 ? false : true}
+                                                        >
+                                                            Подключиться
+                                                        </button>
+                                                    }
                                                     <button
                                                         style={styles.btn}
                                                         onClick={() => handleManage(m.id)}
@@ -401,5 +404,8 @@ const styles = {
         borderRadius: 8,
         padding: "6px 12px",
         cursor: "pointer",
+    },
+    btnWidth: {
+        width: '250px'
     },
 };
