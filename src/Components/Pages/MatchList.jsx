@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMatchSelection } from "../../state/matchSelection";
+import { connectLive, joinRoomMulti, onLive } from "../../services/liveSocket";
 
 const API_BASE = "https://backend.mlf09.ru";
 const LS_KEY = "selectedTournamentId";
@@ -62,13 +63,36 @@ export default function MatchList() {
                     return Number(a.id) - Number(b.id);
                 });
 
-            setMatches(prepared);
+            prepared.forEach((m) => {
+                joinRoomMulti(`tmatch:${m.id}`);
+            });
+
+            setMatches((prev) => {
+                // если состав не изменился — не перерендериваем
+                const prevStr = JSON.stringify(prev);
+                const nextStr = JSON.stringify(prepared);
+                if (prevStr === nextStr) return prev; // без изменений
+
+                return prepared;
+            });
+
         } catch (e) {
             setError(e.message || "Ошибка загрузки матчей");
         } finally {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (!selectedTournament) return;
+
+        const interval = setInterval(() => {
+            loadMatchesForTournament(selectedTournament);
+        }, 2000);
+
+        return () => clearInterval(interval);
+    }, [selectedTournament]);
+
 
     // 1) грузим турниры
     useEffect(() => {
@@ -173,9 +197,9 @@ export default function MatchList() {
                 {view === "tournaments" && (
                     <>
                         <h2 style={{ marginTop: 0, marginBottom: 16 }}>Выберите турнир</h2>
-                        {loading && <div>Загружаю турниры…</div>}
+                        {/* {loading && <div>Загружаю турниры…</div>} */}
                         {error && <div style={{ color: "tomato" }}>{error}</div>}
-                        {!loading && !error && tournaments.length === 0 && (
+                        {!error && tournaments.length === 0 && (
                             <div>Турниров нет</div>
                         )}
 
@@ -221,9 +245,9 @@ export default function MatchList() {
                             style={styles.search}
                         />
 
-                        {loading && <div>Загружаю матчи…</div>}
+                        {/* {loading && <div>Загружаю матчи…</div>} */}
                         {error && <div style={{ color: "tomato" }}>{error}</div>}
-                        {!loading && !error && filteredMatches.length === 0 && (
+                        {!error && filteredMatches.length === 0 && (
                             <div>Матчей нет</div>
                         )}
 

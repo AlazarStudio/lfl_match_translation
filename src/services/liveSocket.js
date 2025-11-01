@@ -94,7 +94,7 @@ export function overlayGet(matchId, ack) {
 }
 export function overlaySet(matchId, patch, ack) {
     // пример бэка: socket.emit('tmatch:overlay:set', { matchId, OpenScore: true })
-    emit("tmatch:overlay:set", { matchId, ...patch, ack });
+    emit("tmatch:overlay:set", { matchId, ...patch }, ack);
 }
 export function overlayToggle(matchId, key) {
     // пример бэка: socket.emit('tmatch:overlay:toggle', { matchId, key: 'ShowPlug' })
@@ -128,4 +128,15 @@ export function getSocket() {
 
 export function currentRoomId() {
     return currentRoom;
+}
+
+const joinedRooms = new Set();
+
+export function joinRoomMulti(room) {
+    if (!socket || !room) return;
+    if (joinedRooms.has(room)) return;
+    socket.emit("room:join", room, (ack) => {
+        // можно проверить ack
+    });
+    joinedRooms.add(room);
 }
