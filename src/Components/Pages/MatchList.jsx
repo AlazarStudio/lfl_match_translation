@@ -88,7 +88,7 @@ export default function MatchList() {
 
         const interval = setInterval(() => {
             loadMatchesForTournament(selectedTournament);
-        }, 2000);
+        }, 1000);
 
         return () => clearInterval(interval);
     }, [selectedTournament]);
