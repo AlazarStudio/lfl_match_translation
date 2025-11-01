@@ -125,7 +125,7 @@ export default function MatchList() {
     const handleConnect = (matchId) => {
         localStorage.setItem("matchId", matchId);
         setSelectedMatchId(matchId);
-        window.open("/live", "_blank");
+        navigate("/live");
     };
 
     const handleManage = (matchId) => {
@@ -259,16 +259,17 @@ export default function MatchList() {
                                                     </div>
                                                 </div>
 
-                                                <div style={{ ...styles.lineJC, ...(window.innerWidth > 768 ? {} : styles.btnWidth) }}>
-                                                    {window.innerWidth > 768 &&
+                                                {/* <div style={{ ...styles.lineJC, ...(window.innerWidth > 768 ? {} : styles.btnWidth) }}> */}
+                                                <div style={styles.lineJC}>
+                                                    {/* {window.innerWidth > 768 && */}
                                                         <button
                                                             style={styles.btn}
                                                             onClick={() => handleConnect(m.id)}
-                                                            disabled={window.innerWidth > 768 ? false : true}
+                                                            // disabled={window.innerWidth > 768 ? false : true}
                                                         >
                                                             Подключиться
                                                         </button>
-                                                    }
+                                                    {/* } */}
                                                     <button
                                                         style={styles.btn}
                                                         onClick={() => handleManage(m.id)}
