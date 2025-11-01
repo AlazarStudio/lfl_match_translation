@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 // ===== твои готовые блоки =====
 import ScoreTop from "../Blocks/ScoreTop/ScoreTop";
@@ -14,27 +14,57 @@ import Plug from "../Blocks/Plug/Plug";
 import { useMatchEvents } from "../../state/matchEvents";
 import { useMatchSelection } from "../../state/matchSelection";
 
-// id матча, можно потом получать из URL или пропсов
+import { fetchAllMatchesFromAllTournaments } from "../../services/matches";
+import PlugBetween from "../Blocks/PlugBetween/PlugBetween";
 
+// id матча, можно потом получать из URL или пропсов
 
 function Main_Page() {
     // инициализация сокета и слушателей
     const initEvents = useMatchEvents((s) => s.init);
-
-    const selectedMatchId = useMatchSelection((s) => s.selectedMatchId) || localStorage.getItem("matchId");
+    const [currentMatchId, setCurrentMatchId] = useState(null);
+    const [noMatch, setNoMatch] = useState(true);
 
     useEffect(() => {
-        if (!selectedMatchId) return;
-        initEvents(selectedMatchId);
-    }, [selectedMatchId, initEvents]);
+        let cancelled = false;
 
-    if (!selectedMatchId) {
-        return (
-            <div style={{ color: "#000", padding: 24 }}>
-                Матч не выбран. Сначала выбери матч на главной.
-            </div>
-        );
-    }
+        async function load() {
+            const all = await fetchAllMatchesFromAllTournaments();
+            if (cancelled) return;
+            // сначала ищем live
+            const live = all.find(
+                (m) => (m.status || "").trim().toLowerCase() === "live"
+            );
+            // если нет live — возьмём просто первый
+            const chosen = live;
+            if (chosen) {
+                setCurrentMatchId(chosen.id);
+                setNoMatch(false);
+            } else {
+                setNoMatch(true);
+            }
+        }
+        // если надо периодически проверять — можно тут setInterval
+        const interval = setInterval(load, 1000);
+        return () => clearInterval(interval);
+    }, []);
+
+    // console.log(currentMatchId)
+
+    // const selectedMatchId = useMatchSelection((s) => s.selectedMatchId);
+
+    useEffect(() => {
+        if (!currentMatchId) return;
+        initEvents(currentMatchId);
+    }, [currentMatchId, initEvents]);
+
+    // if (!selectedMatchId) {
+    //     return (
+    //         <div style={{ color: "#000", padding: 24 }}>
+    //             Матч не выбран. Сначала выбери матч на главной.
+    //         </div>
+    //     );
+    // }
 
     // данные из стора
     const eventKey = useMatchEvents((s) => s.eventKey);
@@ -62,10 +92,26 @@ function Main_Page() {
     // }, [initEvents]);
 
     const isScoreOpen = overlay?.OpenScore ?? true;
+
     return (
         <>
+            <SlideInOut
+                isOpen={noMatch}
+                from="top"
+                top={0}
+                left={0}
+                bottom={0}
+                right={0}
+                durationMs={500}
+            >
+                <PlugBetween
+                    team1={team1}
+                    team2={team2}
+                />
+            </SlideInOut>
+
             {/* ======= ВЕРХНИЙ СЧЁТ ======= */}
-            <SlideInOut isOpen={overlay?.OpenScore ?? false} from="left" top={64} left={86} durationMs={500}>
+            <SlideInOut isOpen={noMatch ? false : overlay?.OpenScore ?? false} from="left" top={64} left={86} durationMs={500}>
                 <ScoreTop
                     team1Score={score1}
                     team2Score={score2}
@@ -75,7 +121,7 @@ function Main_Page() {
             </SlideInOut>
 
             {/* ======= СПОНСОРЫ СПРАВА ======= */}
-            <SlideInOut isOpen={overlay?.OpenScore ?? false} from="right" top={47} right={86} durationMs={500}>
+            <SlideInOut isOpen={noMatch ? false : overlay?.OpenScore ?? false} from="right" top={47} right={86} durationMs={500}>
                 <SponsorsTop />
             </SlideInOut>
 
@@ -106,10 +152,10 @@ function Main_Page() {
             </SlideInOut>
 
             {/* ======= ЭКРАН ОЖИДАНИЯ ======= */}
-            <SlideInOut isOpen={overlay?.OpenWaiting ?? false} from="top" top={64} left="50%" durationMs={500}>
+            <SlideInOut isOpen={noMatch ? false : overlay?.OpenWaiting ?? false} from="top" top={64} left="50%" durationMs={500}>
                 <MainLogo />
             </SlideInOut>
-            <SlideInOut isOpen={overlay?.OpenWaiting ?? false} from="bottom" bottom={64} left="50%" durationMs={500}>
+            <SlideInOut isOpen={noMatch ? false : overlay?.OpenWaiting ?? false} from="bottom" bottom={64} left="50%" durationMs={500}>
                 <Waiting
                     team1={team1}
                     team2={team2}
@@ -117,10 +163,10 @@ function Main_Page() {
             </SlideInOut>
 
             {/* ======= ЭКРАН ПЕРЕРЫВА ======= */}
-            <SlideInOut isOpen={overlay?.OpenBreak ?? false} from="top" top={64} left="50%" durationMs={500}>
+            <SlideInOut isOpen={noMatch ? false : overlay?.OpenBreak ?? false} from="top" top={64} left="50%" durationMs={500}>
                 <MainLogo />
             </SlideInOut>
-            <SlideInOut isOpen={overlay?.OpenBreak ?? false} from="bottom" bottom={64} left="50%" durationMs={500}>
+            <SlideInOut isOpen={noMatch ? false : overlay?.OpenBreak ?? false} from="bottom" bottom={64} left="50%" durationMs={500}>
                 <Waiting
                     breakMatch={true}
                     team1={team1}
@@ -131,17 +177,17 @@ function Main_Page() {
             </SlideInOut>
 
             {/* ======= СОСТАВ КОМАНД ======= */}
-            <SlideInOut isOpen={overlay?.ShowSostavTeam1 ?? false} from="bottom" bottom="50%" left="50%" durationMs={500}>
+            <SlideInOut isOpen={noMatch ? false : overlay?.ShowSostavTeam1 ?? false} from="bottom" bottom="50%" left="50%" durationMs={500}>
                 <StructureTeam team={team1} />
             </SlideInOut>
 
-            <SlideInOut isOpen={overlay?.ShowSostavTeam2 ?? false} from="bottom" bottom="50%" left="50%" durationMs={500}>
+            <SlideInOut isOpen={noMatch ? false : overlay?.ShowSostavTeam2 ?? false} from="bottom" bottom="50%" left="50%" durationMs={500}>
                 <StructureTeam team={team2} />
             </SlideInOut>
 
             {/* ======= ЗАГЛУШКА ======= */}
             <SlideInOut
-                isOpen={overlay?.ShowPlug ?? false}
+                isOpen={noMatch ? false : overlay?.ShowPlug ?? false}
                 from="top"
                 top={0}
                 left={0}

@@ -1,13 +1,13 @@
 .structureTeam {
     width: 1593px;
-    height: 805px;
+    height: 800px;
     position: absolute;
     top: 0;
     left: 0;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -44%);
     background: url("/sostavBackground.png");
     border-radius: 20px;
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 .structureTeam_header {
@@ -21,6 +21,11 @@
 .structureTeam_header_logo {
     width: 255px;
     height: 71px;
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    z-index: 1;
 }
 
 .structureTeam_header_logo img {
@@ -30,7 +35,7 @@
 }
 
 .structureTeam_header_sponsors {
-    width: 653px;
+    width: 100%;
     height: 75px;
 }
 

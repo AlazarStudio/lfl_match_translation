@@ -11,8 +11,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 50px;
+    justify-content: space-between;
+    gap: 100px;
+    opacity: 0.98;
+    padding: 150px 0;
 }
 
 .plug_log {
@@ -37,12 +39,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 50px;
 }
 
 .waitingLine {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
 }
 
 .waitingLine_logo {

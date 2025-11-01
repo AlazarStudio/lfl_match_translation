@@ -23,7 +23,8 @@ const OVERLAY_KEYS = [
 const EXCLUSIVE_KEYS = OVERLAY_KEYS.map(k => k.key);
 
 export default function OverlayPanel() {
-    const selectedMatchId = useMatchSelection((s) => s.selectedMatchId) || localStorage.getItem("matchId");
+    // const selectedMatchId = useMatchSelection((s) => s.selectedMatchId) || localStorage.getItem("matchId");
+    const selectedMatchId = useMatchSelection((s) => s.selectedMatchId);
 
     const initEvents = useMatchEvents((s) => s.init);
 
@@ -39,7 +40,7 @@ export default function OverlayPanel() {
     if (!selectedMatchId) {
         return (
             <div style={{ color: "#000", padding: 24 }}>
-                Матч не выбран. Сначала выбери матч на главной.
+                {/* Матч не выбран. Сначала выбери матч на главной. */}
             </div>
         );
     }

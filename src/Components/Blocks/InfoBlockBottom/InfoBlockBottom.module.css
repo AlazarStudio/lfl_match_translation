@@ -38,12 +38,13 @@
 .infoBlockBottom_player_photo {
     width: 100px;
     height: 100px;
+    background-color: #fff;
 }
 
 .infoBlockBottom_player_photo img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .infoBlockBottom_event {

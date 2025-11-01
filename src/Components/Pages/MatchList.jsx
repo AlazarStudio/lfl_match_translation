@@ -119,17 +119,17 @@ export default function MatchList() {
         setQuery("");
         // можно не чистить localStorage — пусть помнит, что последний турнир был этот
         // если хочешь чистить — раскомментируй:
-        // localStorage.removeItem(LS_KEY);
+        localStorage.removeItem(LS_KEY);
     };
 
     const handleConnect = (matchId) => {
-        localStorage.setItem("matchId", matchId);
+        // localStorage.setItem("matchId", matchId);
         setSelectedMatchId(matchId);
         navigate("/live");
     };
 
     const handleManage = (matchId) => {
-        localStorage.setItem("matchId", matchId);
+        // localStorage.setItem("matchId", matchId);
         setSelectedMatchId(matchId);
         navigate("/overlay");
     };
@@ -260,7 +260,7 @@ export default function MatchList() {
                                                 </div>
 
                                                 <div style={{ ...styles.lineJC, ...(window.innerWidth > 768 ? {} : styles.btnWidth) }}>
-                                                    {window.innerWidth > 768 &&
+                                                    {/* {window.innerWidth > 768 &&
                                                         <button
                                                             style={styles.btn}
                                                             onClick={() => handleConnect(m.id)}
@@ -268,7 +268,7 @@ export default function MatchList() {
                                                         >
                                                             Подключиться
                                                         </button>
-                                                    }
+                                                    } */}
                                                     <button
                                                         style={styles.btn}
                                                         onClick={() => handleManage(m.id)}
