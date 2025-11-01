@@ -21,6 +21,7 @@
 .infoBlockBottom_logoTeam {
     width: 100px;
     height: 100px;
+    background-color: #fff;
 }
 
 .infoBlockBottom_logoTeam img {
@@ -38,7 +39,6 @@
 .infoBlockBottom_player_photo {
     width: 100px;
     height: 100px;
-    background-color: #fff;
 }
 
 .infoBlockBottom_player_photo img {
