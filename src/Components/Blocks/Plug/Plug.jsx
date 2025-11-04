@@ -23,7 +23,7 @@ function Plug({ children, team1, team2, ...props }) {
                 </div>
                 <div className={classes.waitingLine}>
                     <div className={classes.waitingLine_sponsors}>
-                        <img src="sponsors3.png" alt="" />
+                        <img src="sponsorsNew.png" alt="" />
                     </div>
                 </div>
             </div>

@@ -22,7 +22,7 @@ function Waiting({ children, breakMatch = false, team1, team2, team1Score, team2
             </div>
             <div className={classes.waitingLine}>
                 <div className={classes.waitingLine_sponsors}>
-                    <img src="sponsors3.png" alt="" />
+                    <img src="sponsorsNew.png" alt="" />
                 </div>
             </div>
         </div>
