@@ -142,8 +142,8 @@ function Main_Page() {
                         player={{
                             name: lastEvent.playerName,
                             teamName: lastEvent.teamTitle,
-                            photo: lastEvent.playerPhoto || "football_team_player_photo.png",
-                            teamLogo: lastEvent.teamLogo || "football_team_logo.png",
+                            photo: lastEvent.playerPhoto,
+                            teamLogo: lastEvent.teamLogo,
                             minute: lastEvent.minute,
                             assistName: lastEvent.assistName,
                         }}
