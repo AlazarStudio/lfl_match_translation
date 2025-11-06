@@ -4,12 +4,13 @@ import classes from './StructureTeam.module.css';
 function StructureTeam({ children, team, ...props }) {
     return (
         <div className={classes.structureTeam}>
-            <div className={classes.structureTeam_header_logo}>
+            {/* <div className={classes.structureTeam_header_logo}>
                 <img src="structure_logo.png" alt="" />
-            </div>
+            </div> */}
             <div className={classes.structureTeam_header}>
                 <div className={classes.structureTeam_header_sponsors}>
-                    <img src="sponsors3.png" alt="" />
+                    {/* <img src="sponsors3.png" alt="" /> */}
+                    <img src="structure_logo.png" alt="" />
                 </div>
             </div>
             <div className={classes.structureTeam_main}>

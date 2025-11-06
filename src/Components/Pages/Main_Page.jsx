@@ -130,7 +130,7 @@ function Main_Page() {
                 from="left"
                 bottom={86}
                 left={86}
-                showForMs={5000}
+                showForMs={10000}
                 durationMs={500}
                 appearDelayMs={0}
                 exitDelayMs={500}
