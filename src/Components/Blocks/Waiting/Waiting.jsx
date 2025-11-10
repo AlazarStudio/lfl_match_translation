@@ -1,12 +1,12 @@
 import React from "react";
 import classes from './Waiting.module.css';
 
-function Waiting({ children, breakMatch = false, team1, team2, team1Score, team2Score, ...props }) {
+function Waiting({ children, breakMatch = false, timeOut = false, team1, team2, team1Score, team2Score, ...props }) {
     return (
         <div className={classes.waiting}>
             <div className={classes.waitingLine}>
                 <div className={classes.waitingLine_wait}>
-                    {breakMatch ? "перерыв" : "ожидание"}
+                    {breakMatch ? "перерыв" : timeOut ? "Тайм-аут" : "ожидание"}
                 </div>
             </div>
             <div className={classes.waitingLine}>

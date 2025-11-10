@@ -19,6 +19,10 @@ const OVERLAY_KEYS = [
     { key: "ShowSostavTeam2", label: "Состав команды 2 (ShowSostavTeam2)" },
     { key: "OpenScore", label: "Счёт + Спонсоры (OpenScore)" },
     { key: "OpenBreak", label: "Перерыв (OpenBreak)" },
+
+    { key: "ShowTimeOut", label: "Тайм-аут (TimeOut)" },
+    { key: "ShowJudge", label: "Судья матча (ShowJudge)" },
+    { key: "ShowCommentator", label: "Комментатор (ShowCommentator)" },
 ];
 const EXCLUSIVE_KEYS = OVERLAY_KEYS.map(k => k.key);
 

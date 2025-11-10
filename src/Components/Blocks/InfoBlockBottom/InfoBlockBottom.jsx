@@ -4,7 +4,7 @@ import classes from './InfoBlockBottom.module.css';
 function InfoBlockBottom({ children, eventType, player, ...props }) {
     let shortName = player?.name
 
-    if (player?.name.includes("-")){
+    if (player?.name?.includes("-")){
         shortName = player?.name?.split("-")[0]+'-'+player?.name?.split("-")[1][0]
     }
     
@@ -20,7 +20,7 @@ function InfoBlockBottom({ children, eventType, player, ...props }) {
                     </div>
                     <div className={classes.infoBlockBottom_player_info}>
                         {/* <div className={classes.infoBlockBottom_player_info_name}>{player?.name?.split("-")[0]+'-'+player?.name?.split("-")[1][0]}</div> */}
-                        <div className={classes.infoBlockBottom_player_info_name}>{shortName}</div>
+                        <div className={classes.infoBlockBottom_player_info_name} style={{fontSize: eventType == 'judge' && '24px'}}>{shortName}</div>
                         <div className={classes.infoBlockBottom_player_info_teamName}>{player?.teamName}</div>
                     </div>
                 </div>
@@ -30,8 +30,10 @@ function InfoBlockBottom({ children, eventType, player, ...props }) {
                     {eventType == 'yellow' && <img src="yellow.png" alt="" />}
                     {eventType == 'red' && <img src="red.png" alt="" />}
                     {eventType == 'goal' && <img src="ball.png" alt="" />}
+                    {eventType == 'judge' && <img src="judge.png" alt="" />}
+                    {eventType == 'commentator' && <img src="commentator.png" alt="" />}
                 </div>
-                <div className={classes.infoBlockBottom_event_time}>{player.minute}’</div>
+                <div className={classes.infoBlockBottom_event_time}>{player.minute ? player.minute + " ’" : ''}</div>
             </div>
         </div>
     );

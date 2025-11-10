@@ -4,9 +4,7 @@ import { useMatchEvents } from "../../../state/matchEvents";
 
 function ScoreTop({ children, team1Score, team2Score, team1, team2, ...props }) {
     const clock = useMatchEvents((s) => s.clock);
-    const timeText = clock?.formatted ;
-
-    // console.log(team1)
+    const timeText = clock?.formatted;
     return (
         <div className={classes.scoreTop}>
             <div className={classes.scoreTop_logo}>
@@ -16,7 +14,7 @@ function ScoreTop({ children, team1Score, team2Score, team1, team2, ...props }) 
             <div className={classes.scoreTop_info}>
                 <div className={classes.scoreTop_info_top}>
                     <div className={classes.scoreTop_info_top_left}>
-                        <div className={classes.scoreTop_info_top_left_color}></div>
+                        {/* <div className={classes.scoreTop_info_top_left_color}></div> */}
                         <div className={classes.scoreTop_info_top_left_team}>{team1?.title}</div>
                     </div>
 
@@ -26,14 +24,15 @@ function ScoreTop({ children, team1Score, team2Score, team1, team2, ...props }) 
 
                     <div className={classes.scoreTop_info_top_right}>
                         <div className={classes.scoreTop_info_top_right_team}>{team2?.title}</div>
-                        <div className={classes.scoreTop_info_top_right_color}></div>
+                        {/* <div className={classes.scoreTop_info_top_right_color}></div> */}
                     </div>
                 </div>
 
                 <div className={classes.scoreTop_info_bottom}>
                     <div className={classes.scoreTop_info_bottom_time}>
                         {/* {clock?.phase === "H1" ? "Т1" : clock?.phase === "H2" ? "Т2s" : ""} -  */}
-                        {timeText}</div>
+                        {timeText}
+                    </div>
                 </div>
             </div>
         </div>

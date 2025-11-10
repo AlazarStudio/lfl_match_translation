@@ -158,6 +158,7 @@ export default function MatchList() {
         navigate("/overlay");
     };
 
+
     // поиск по матчам
     const filteredMatches =
         view === "matches"
@@ -295,6 +296,7 @@ export default function MatchList() {
                                                     } */}
                                                     <button
                                                         style={styles.btn}
+                                                        // onClick={() => handleManage(69)}
                                                         onClick={() => handleManage(m.id)}
                                                     >
                                                         Управление

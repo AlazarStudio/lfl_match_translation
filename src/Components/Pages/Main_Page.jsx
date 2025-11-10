@@ -18,6 +18,8 @@ import { fetchAllMatchesFromAllTournaments } from "../../services/matches";
 import PlugBetween from "../Blocks/PlugBetween/PlugBetween";
 
 // id матча, можно потом получать из URL или пропсов
+const API_BASE = "https://backend.mlf09.ru";
+const API_TM = `${API_BASE}/api/tournament-matches`;
 
 function Main_Page() {
     // инициализация сокета и слушателей
@@ -41,6 +43,8 @@ function Main_Page() {
                 setCurrentMatchId(chosen.id);
                 setNoMatch(false);
             } else {
+                // setCurrentMatchId(69);
+                // setNoMatch(false);
                 setNoMatch(true);
             }
         }
@@ -73,8 +77,7 @@ function Main_Page() {
     const score2 = useMatchEvents((s) => s.score2);
     const team1 = useMatchEvents((s) => s.team1);
     const team2 = useMatchEvents((s) => s.team2);
-
-    // console.log(lastEvent)
+    const referee = useMatchEvents((s) => s.referee);
 
     const overlay = useMatchEvents((s) => s.overlay);
     const setOverlayKey = useMatchEvents((s) => s.setOverlayKey);
@@ -86,12 +89,49 @@ function Main_Page() {
     const [openBreak, setOpenBreak] = React.useState(false);
     const [showSostav, setShowSostav] = React.useState(false);
     const [showPlug, setShowPlug] = React.useState(false);
+    const [showTimeOut, setShowTimeOut] = React.useState(false);
+
+    const [initReferee, setInitReferee] = useState();
+    const [showReferee, setShowReferee] = useState(false);
+    const [showCommentator, setShowCommentator] = useState(false);
 
     // useEffect(() => {
     //     initEvents(MATCH_ID); // подключаемся к матчу
     // }, [initEvents]);
 
     const isScoreOpen = overlay?.OpenScore ?? true;
+
+    async function fetchReferee(matchId) {
+        try {
+            const snap = await fetch(`${API_TM}/${matchId}`).then(r => r.json());
+            // бэк мог вернуть либо referees (массив), либо referee (один объект)
+            const referee = Array.isArray(snap?.referees) ? snap.referees[0] : snap?.referee || null;
+            return referee;
+        } catch (e) {
+            console.warn("Не удалось загрузить снапшот матча", e);
+            return null;
+        }
+    }
+
+    useEffect(() => {
+        let cancelled = false;
+
+        if (overlay?.ShowJudge) {
+            (async () => {
+                const ref = await fetchReferee(currentMatchId);
+                if (cancelled) return;
+
+                setInitReferee(ref.referee);        // null если нет судьи
+                setShowReferee(true);
+            })();
+        } else {
+            // скрываем блок и чистим данные
+            setInitReferee(null);
+            setShowReferee(false);
+        }
+
+        return () => { cancelled = true; };
+    }, [overlay?.ShowJudge, currentMatchId]);
 
     return (
         <>
@@ -107,6 +147,19 @@ function Main_Page() {
                 <PlugBetween
                     team1={team1}
                     team2={team2}
+                />
+            </SlideInOut>
+
+            <SlideInOut isOpen={noMatch ? false : overlay?.ShowTimeOut ?? false} from="top" top={64} left="50%" durationMs={500}>
+                <MainLogo />
+            </SlideInOut>
+            <SlideInOut isOpen={noMatch ? false : overlay?.ShowTimeOut ?? false} from="bottom" bottom={64} left="50%" durationMs={500}>
+                <Waiting
+                    timeOut={true}
+                    team1={team1}
+                    team2={team2}
+                    team1Score={score1}
+                    team2Score={score2}
                 />
             </SlideInOut>
 
@@ -150,6 +203,57 @@ function Main_Page() {
                     />
                 )}
             </SlideInOut>
+
+            <SlideInOut
+                from="left"
+                bottom={86}
+                left={86}
+                showForMs={10000}
+                durationMs={500}
+                appearDelayMs={0}
+                exitDelayMs={500}
+                triggerKey={showReferee} // триггерит появление на каждый event+
+            >
+                {initReferee && (
+                    <InfoBlockBottom
+                        eventType={"judge"}
+                        player={{
+                            name: initReferee.name,
+                            teamName: "Судья матча",
+                            photo: initReferee.images[0],
+                            teamLogo: "lfl_logo_big.png",
+                            minute: initReferee.minute,
+                            assistName: initReferee.assistName,
+                        }}
+                    />
+                )}
+            </SlideInOut>
+
+            <SlideInOut
+                from="left"
+                bottom={86}
+                left={86}
+                showForMs={10000}
+                durationMs={500}
+                appearDelayMs={0}
+                exitDelayMs={500}
+                triggerKey={overlay?.ShowCommentator} // триггерит появление на каждый event+
+            >
+                {overlay?.ShowCommentator && (
+                    <InfoBlockBottom
+                        eventType={"commentator"}
+                        player={{
+                            name: "Хубиев Мурат",
+                            teamName: "Комментатор матча",
+                            photo: "",
+                            teamLogo: "lfl_logo_big.png",
+                            minute: "",
+                            assistName: "",
+                        }}
+                    />
+                )}
+            </SlideInOut>
+
 
             {/* ======= ЭКРАН ОЖИДАНИЯ ======= */}
             <SlideInOut isOpen={noMatch ? false : overlay?.OpenWaiting ?? false} from="top" top={64} left="50%" durationMs={500}>

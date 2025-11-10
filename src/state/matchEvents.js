@@ -22,6 +22,8 @@ export const useMatchEvents = create((set, get) => ({
   team1: null, // { title, logo, lineup? }
   team2: null, // { title, logo, lineup? }
 
+  referee: null,
+
   // статус/таймер
   status: null,
   clock: {
@@ -59,6 +61,11 @@ export const useMatchEvents = create((set, get) => ({
       const snap = await fetch(
         `${API_TM}/${matchId}?include=team1,team2,events`
       ).then((r) => r.json());
+
+      const snapRef = await fetch(
+        `${API_TM}/${matchId}`
+      ).then((r) => r.json());
+
       const t1 = snap?.team1TT?.team;
       const t2 = snap?.team2TT?.team;
 
@@ -295,7 +302,14 @@ function fmtClock(c, offsetMs = 0) {
       Math.floor((serverNow - Number(c.startedAt)) / 1000)
     );
   }
-  const total = base + runningSec + added;
+
+  let total = base + runningSec + added;
+
+  const isSecondHalf = c.phase;
+  if (isSecondHalf && isSecondHalf == "H2") {
+    total += (c.halfMinutes * 60);
+  }
+
   const mm = Math.floor(total / 60);
   const ss = total % 60;
   return `${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
