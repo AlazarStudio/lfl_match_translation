@@ -13,18 +13,29 @@ import { useNavigate } from "react-router-dom";
 
 // какие ключи управляем с пульта (взаимоисключаемые)
 const OVERLAY_KEYS = [
-    { key: "ShowPlug", label: "Заглушка (ShowPlug)" },
-    { key: "OpenWaiting", label: "Экран ожидания (OpenWaiting)" },
-    { key: "ShowSostavTeam1", label: "Состав команды 1 (ShowSostavTeam1)" },
-    { key: "ShowSostavTeam2", label: "Состав команды 2 (ShowSostavTeam2)" },
-    { key: "OpenScore", label: "Счёт + Спонсоры (OpenScore)" },
-    { key: "OpenBreak", label: "Перерыв (OpenBreak)" },
-
-    // временные ключи на 10 секунд
-    { key: "ShowTimeOut", label: "Тайм-аут (ShowTimeOut)" },
-    { key: "ShowJudge", label: "Судья матча (ShowJudge)" },
-    { key: "ShowCommentator", label: "Комментатор (ShowCommentator)" },
+    { key: "OpenScore", label: "Счёт + Спонсоры" },
+    { key: "OpenWaiting", label: "Экран ожидания" },
+    { key: "ShowJudge", label: "Судья матча" },
+    { key: "ShowCommentator", label: "Комментатор" },
+    { key: "ShowSostavTeam1", label: "Состав команды 1" },
+    { key: "ShowSostavTeam2", label: "Состав команды 2" },
+    { key: "OpenBreak", label: "Перерыв" },
+    { key: "ShowTimeOut", label: "Тайм-аут" },
+    { key: "ShowPlug", label: "Заглушка" },
 ];
+// const OVERLAY_KEYS = [
+//     { key: "ShowPlug", label: "Заглушка (ShowPlug)" },
+//     { key: "OpenWaiting", label: "Экран ожидания (OpenWaiting)" },
+//     { key: "ShowSostavTeam1", label: "Состав команды 1 (ShowSostavTeam1)" },
+//     { key: "ShowSostavTeam2", label: "Состав команды 2 (ShowSostavTeam2)" },
+//     { key: "OpenScore", label: "Счёт + Спонсоры (OpenScore)" },
+//     { key: "OpenBreak", label: "Перерыв (OpenBreak)" },
+
+//     // временные ключи на 10 секунд
+//     { key: "ShowTimeOut", label: "Тайм-аут (ShowTimeOut)" },
+//     { key: "ShowJudge", label: "Судья матча (ShowJudge)" },
+//     { key: "ShowCommentator", label: "Комментатор (ShowCommentator)" },
+// ];
 
 const EXCLUSIVE_KEYS = OVERLAY_KEYS.map(k => k.key);
 // ключи с автотушением
@@ -220,7 +231,7 @@ export default function OverlayPanel() {
                     </button>
                 </div>
 
-                <div style={styles.stateBox}>
+                {/* <div style={styles.stateBox}>
                     <div style={styles.stateHeader}>
                         Текущее состояние overlay:
                         <button style={styles.smallBtn} onClick={() => overlayGet(matchId)}>↻</button>
@@ -228,7 +239,7 @@ export default function OverlayPanel() {
                     <pre style={styles.pre}>
                         {overlay ? JSON.stringify(overlay, null, 2) : "— нет данных —"}
                     </pre>
-                </div>
+                </div> */}
             </div>
         </div>
     );
