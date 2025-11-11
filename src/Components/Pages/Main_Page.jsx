@@ -108,7 +108,6 @@ function Main_Page() {
             const snap = await fetch(`${API_TM}/${matchId}`).then(r => r.json());
             // бэк мог вернуть либо referees (массив), либо referee (один объект)
 
-            console.log(snap)
             const referee = Array.isArray(snap?.referees) ? snap.referees[0] : snap?.referee || null;
             return referee;
         } catch (e) {
@@ -250,21 +249,19 @@ function Main_Page() {
                 durationMs={500}
                 appearDelayMs={0}
                 exitDelayMs={500}
-                triggerKey={showReferee} // триггерит появление на каждый event+
+                isOpen={noMatch ? false : showReferee ?? false}
             >
-                {initReferee && (
-                    <InfoBlockBottom
-                        eventType={"judge"}
-                        player={{
-                            name: initReferee.name,
-                            teamName: "Судья матча",
-                            photo: initReferee.images[0],
-                            teamLogo: "lfl_logo_big.png",
-                            minute: initReferee.minute,
-                            assistName: initReferee.assistName,
-                        }}
-                    />
-                )}
+                <InfoBlockBottom
+                    eventType={"judge"}
+                    player={{
+                        name: initReferee && initReferee.name,
+                        teamName: initReferee && "Судья матча",
+                        photo: initReferee && initReferee.images[0],
+                        teamLogo: initReferee && "lfl_logo_big.png",
+                        minute: initReferee && initReferee.minute,
+                        assistName: initReferee && initReferee.assistName,
+                    }}
+                />
             </SlideInOut>
 
             <SlideInOut
@@ -275,22 +272,20 @@ function Main_Page() {
                 durationMs={500}
                 appearDelayMs={0}
                 exitDelayMs={500}
-                triggerKey={showCommentator} // триггерит появление на каждый event+
+                isOpen={initCommentator?.length == 0 ? false : noMatch ? false : showCommentator ?? false}
             >
-                {initCommentator && (
-                    <InfoBlockBottom
-                        eventType={"commentator"}
-                        commentator={initCommentator}
-                        player={{
-                            name: "",
-                            teamName: "",
-                            photo: "",
-                            teamLogo: "lfl_logo_big.png",
-                            minute: "",
-                            assistName: "",
-                        }}
-                    />
-                )}
+                <InfoBlockBottom
+                    eventType={"commentator"}
+                    commentator={initCommentator}
+                    player={{
+                        name: "",
+                        teamName: "",
+                        photo: "",
+                        teamLogo: "lfl_logo_big.png",
+                        minute: "",
+                        assistName: "",
+                    }}
+                />
             </SlideInOut>
 
 

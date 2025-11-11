@@ -43,7 +43,7 @@ function InfoBlockBottom({ children, eventType, player, commentator, ...props })
                                 ))}
                             </div>
 
-                            <div className={classes.infoBlockBottom_player_info_teamName}>{commentator.length > 0 ? 'Комментаторы матча' : 'Комментатор матча'}</div>
+                            <div className={classes.infoBlockBottom_player_info_teamName}>{commentator.length >= 2 ? 'Комментаторы матча' : 'Комментатор матча'}</div>
                         </div>
                     </div>
                 }

@@ -1,5 +1,5 @@
 // src/pages/OverlayPanel.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
     connectLive,
     joinRoom,
@@ -20,34 +20,37 @@ const OVERLAY_KEYS = [
     { key: "OpenScore", label: "Счёт + Спонсоры (OpenScore)" },
     { key: "OpenBreak", label: "Перерыв (OpenBreak)" },
 
-    { key: "ShowTimeOut", label: "Тайм-аут (TimeOut)" },
+    // временные ключи на 10 секунд
+    { key: "ShowTimeOut", label: "Тайм-аут (ShowTimeOut)" },
     { key: "ShowJudge", label: "Судья матча (ShowJudge)" },
     { key: "ShowCommentator", label: "Комментатор (ShowCommentator)" },
 ];
+
 const EXCLUSIVE_KEYS = OVERLAY_KEYS.map(k => k.key);
+// ключи с автотушением
+const TIMED_KEYS = ["ShowJudge", "ShowCommentator"]; // можно добавить "ShowTimeOut" при необходимости
+const TTL_SEC = 9;
 
 export default function OverlayPanel() {
-    // const selectedMatchId = useMatchSelection((s) => s.selectedMatchId) || localStorage.getItem("matchId");
     const selectedMatchId = useMatchSelection((s) => s.selectedMatchId);
-
     const initEvents = useMatchEvents((s) => s.init);
 
-    const [matchId, setMatchId] = useState(selectedMatchId);
+    const [matchId, setMatchId] = useState(selectedMatchId || 0);
     const [overlay, setOverlay] = useState(null);
     const [busy, setBusy] = useState(false);
+
+    // локальные таймеры: { [key]: deadlineMs | null }
+    const [timers, setTimers] = useState({});
+    const [now, setNow] = useState(Date.now());
+
+    useEffect(() => {
+        if (selectedMatchId) setMatchId(selectedMatchId);
+    }, [selectedMatchId]);
 
     useEffect(() => {
         if (!selectedMatchId) return;
         initEvents(selectedMatchId);
     }, [selectedMatchId, initEvents]);
-
-    if (!selectedMatchId) {
-        return (
-            <div style={{ color: "#000", padding: 24 }}>
-                {/* Матч не выбран. Сначала выбери матч на главной. */}
-            </div>
-        );
-    }
 
     useEffect(() => { connectLive(); }, []);
 
@@ -55,17 +58,65 @@ export default function OverlayPanel() {
         if (!matchId) return;
         joinRoom(`tmatch:${matchId}`);
 
-        const off = onOverlay((state) => setOverlay(state || {}));
-        overlayGet(matchId);
+        const off = onOverlay((state) => {
+            const st = state || {};
+            setOverlay(st);
 
+            // если ключ с таймером выключили извне — сбрасываем локальный таймер
+            setTimers((prev) => {
+                const next = { ...prev };
+                TIMED_KEYS.forEach(k => {
+                    if (!st[k] && next[k]) next[k] = null;
+                });
+                return next;
+            });
+        });
+
+        overlayGet(matchId);
         return () => { off && off(); };
     }, [matchId]);
 
+    // тикер для обратного отсчёта (каждую секунду)
+    useEffect(() => {
+        const id = setInterval(() => setNow(Date.now()), 1000);
+        return () => clearInterval(id);
+    }, []);
+
     const isOn = (key) => !!(overlay && overlay[key]);
 
-    // ВЗАИМНОЕ ИСКЛЮЧЕНИЕ:
-    // если клик по уже включённой — выключаем все
-    // если по выключенной — включаем только её, остальные OFF
+    // helper: запустить таймер на key
+    const startTimer = (key, sec = TTL_SEC) => {
+        const deadline = Date.now() + sec * 1000;
+        setTimers((prev) => ({ ...prev, [key]: deadline }));
+    };
+
+    const remainingSec = (key) => {
+        const deadline = timers[key];
+        if (!deadline) return 0;
+        const left = Math.ceil((deadline - now) / 1000);
+        return left > 0 ? left : 0;
+    };
+
+    // автоотключение по достижении дедлайна
+    useEffect(() => {
+        if (!matchId || !overlay) return;
+
+        TIMED_KEYS.forEach((key) => {
+            const deadline = timers[key];
+            if (!deadline) return;
+            const left = deadline - now;
+
+            // если уже истёк и всё ещё включено — выключаем
+            if (left <= 0 && isOn(key)) {
+                overlaySet(matchId, { [key]: false });
+                setTimers((prev) => ({ ...prev, [key]: null }));
+                // можно дополнительно обновить overlay из бэка
+                overlayGet(matchId);
+            }
+        });
+    }, [now, matchId, overlay, timers]);
+
+    // ВЗАИМНОЕ ИСКЛЮЧЕНИЕ + поддержка timed-ключей
     const handleExclusive = async (key) => {
         if (!matchId || busy) return;
         setBusy(true);
@@ -73,16 +124,25 @@ export default function OverlayPanel() {
             const wantOn = !isOn(key);
             const patch = {};
             EXCLUSIVE_KEYS.forEach(k => { patch[k] = false; });
+
             if (wantOn) patch[key] = true;
 
             overlaySet(matchId, patch);
             overlayGet(matchId);
+
+            // если это timed-ключ и мы его включили — запускаем отсчёт
+            if (wantOn && TIMED_KEYS.includes(key)) {
+                startTimer(key, TTL_SEC);
+            } else if (!wantOn && TIMED_KEYS.includes(key)) {
+                // выключили вручную — чистим таймер
+                setTimers((prev) => ({ ...prev, [key]: null }));
+            }
         } finally {
             setTimeout(() => setBusy(false), 200);
         }
     };
 
-    // пресеты остаются на случай быстрого переключения
+    // пресет “выключить всё”
     const presetOnly = async (keyTrue) => {
         if (!matchId || busy) return;
         setBusy(true);
@@ -90,8 +150,18 @@ export default function OverlayPanel() {
             const patch = {};
             EXCLUSIVE_KEYS.forEach(k => { patch[k] = false; });
             if (keyTrue) patch[keyTrue] = true;
+
             overlaySet(matchId, patch);
             overlayGet(matchId);
+
+            // таймеры сбрасываем, кроме того, который включили
+            setTimers((prev) => {
+                const next = {};
+                TIMED_KEYS.forEach(k => {
+                    next[k] = keyTrue === k ? Date.now() + TTL_SEC * 1000 : null;
+                });
+                return next;
+            });
         } finally {
             setTimeout(() => setBusy(false), 200);
         }
@@ -107,7 +177,7 @@ export default function OverlayPanel() {
                 </button>
                 <h2 style={{ marginTop: 0, marginBottom: 20 }}>Пульт управления трансляцией</h2>
 
-                <div style={styles.row} >
+                <div style={styles.row}>
                     <label style={styles.label}>Match ID:</label>
                     <input
                         type="number"
@@ -123,6 +193,9 @@ export default function OverlayPanel() {
                 <div style={styles.pills}>
                     {OVERLAY_KEYS.map(({ key, label }) => {
                         const active = isOn(key);
+                        const isTimed = TIMED_KEYS.includes(key);
+                        const secLeft = isTimed ? remainingSec(key) : 0;
+
                         return (
                             <button
                                 key={key}
@@ -135,24 +208,13 @@ export default function OverlayPanel() {
                                 title={key}
                             >
                                 {active ? "ON" : "OFF"} — {label}
+                                {active && isTimed ? ` · ${secLeft}s` : ""}
                             </button>
                         );
                     })}
                 </div>
 
                 <div style={styles.row}>
-                    {/* <button style={styles.btn} onClick={() => presetOnly("OpenScore")} disabled={busy}>
-                        Показать только счёт
-                    </button>
-                    <button style={styles.btn} onClick={() => presetOnly("OpenWaiting")} disabled={busy}>
-                        Экран ожидания
-                    </button>
-                    <button style={styles.btn} onClick={() => presetOnly("OpenBreak")} disabled={busy}>
-                        Перерыв
-                    </button>
-                    <button style={styles.btn} onClick={() => presetOnly("ShowPlug")} disabled={busy}>
-                        Заглушка
-                    </button> */}
                     <button style={styles.btn} onClick={() => presetOnly(null)} disabled={busy}>
                         Выключить всё
                     </button>
@@ -168,10 +230,9 @@ export default function OverlayPanel() {
                     </pre>
                 </div>
             </div>
-        </div >
+        </div>
     );
 }
-
 const styles = {
     wrap: { minHeight: "100vh", background: "#0f1115", color: "#e6e6e6", padding: 24, boxSizing: "border-box" },
     card: { maxWidth: 960, margin: "0 auto", background: "#181b22", border: "1px solid #2a2f3a", borderRadius: 12, padding: 16, boxSizing: "border-box", boxShadow: "0 10px 30px rgba(0,0,0,0.35)" },
