@@ -93,6 +93,8 @@ function Main_Page() {
 
     const [initReferee, setInitReferee] = useState();
     const [showReferee, setShowReferee] = useState(false);
+
+    const [initCommentator, setInitCommentator] = useState();
     const [showCommentator, setShowCommentator] = useState(false);
 
     // useEffect(() => {
@@ -105,8 +107,23 @@ function Main_Page() {
         try {
             const snap = await fetch(`${API_TM}/${matchId}`).then(r => r.json());
             // бэк мог вернуть либо referees (массив), либо referee (один объект)
+
+            console.log(snap)
             const referee = Array.isArray(snap?.referees) ? snap.referees[0] : snap?.referee || null;
             return referee;
+        } catch (e) {
+            console.warn("Не удалось загрузить снапшот матча", e);
+            return null;
+        }
+    }
+
+    async function fetchCommentators(matchId) {
+        try {
+            const snap = await fetch(`${API_TM}/${matchId}`).then(r => r.json());
+            // бэк мог вернуть либо referees (массив), либо referee (один объект)
+
+            const commentators = Array.isArray(snap?.commentators) ? snap.commentators : snap?.commentators || null;
+            return commentators;
         } catch (e) {
             console.warn("Не удалось загрузить снапшот матча", e);
             return null;
@@ -132,6 +149,27 @@ function Main_Page() {
 
         return () => { cancelled = true; };
     }, [overlay?.ShowJudge, currentMatchId]);
+
+
+    useEffect(() => {
+        let cancelled = false;
+
+        if (overlay?.ShowCommentator) {
+            (async () => {
+                const ref = await fetchCommentators(currentMatchId);
+                if (cancelled) return;
+
+                setInitCommentator(ref);        // null если нет судьи
+                setShowCommentator(true);
+            })();
+        } else {
+            // скрываем блок и чистим данные
+            setInitCommentator(null);
+            setShowCommentator(false);
+        }
+
+        return () => { cancelled = true; };
+    }, [overlay?.ShowCommentator, currentMatchId]);
 
     return (
         <>
@@ -237,14 +275,15 @@ function Main_Page() {
                 durationMs={500}
                 appearDelayMs={0}
                 exitDelayMs={500}
-                triggerKey={overlay?.ShowCommentator} // триггерит появление на каждый event+
+                triggerKey={showCommentator} // триггерит появление на каждый event+
             >
-                {overlay?.ShowCommentator && (
+                {initCommentator && (
                     <InfoBlockBottom
                         eventType={"commentator"}
+                        commentator={initCommentator}
                         player={{
-                            name: "Хубиев Мурат",
-                            teamName: "Комментатор матча",
+                            name: "",
+                            teamName: "",
                             photo: "",
                             teamLogo: "lfl_logo_big.png",
                             minute: "",
